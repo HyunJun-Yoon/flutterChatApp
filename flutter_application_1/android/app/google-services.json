@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "757757643796",
+    "project_id": "bitmobick-cc667",
+    "storage_bucket": "bitmobick-cc667.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:757757643796:android:0a23e3004ffe320fd5ab01",
+        "android_client_info": {
+          "package_name": "com.example.flutter_application_1"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBjUcOHPJiTHy1i0r5q-65wPxdSrXlANZI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

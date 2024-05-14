@@ -67,7 +67,7 @@ class _LoginPageState extends State<LoginPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              "안녕하세요 모빅월드입니다.",
+              "안녕하세요 로컬모빅입니다.",
               style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.w800,

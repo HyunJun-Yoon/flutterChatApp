@@ -57,8 +57,8 @@ class _RegisterPageState extends State<RegisterPage> {
     '강원도',
     '경상남도',
     '경상북도',
-    '충천남도',
-    '충천북도',
+    '충청남도',
+    '충청북도',
     '전라남도',
     '전라북도',
     '제주도',
@@ -239,7 +239,107 @@ class _RegisterPageState extends State<RegisterPage> {
 
   final jeju = ['제주시', '서귀포시'];
 
-  String? dropdownvalue = '서울특별시';
+  final seoul = [
+    '종로구',
+    '중구',
+    '용산구',
+    '성동구',
+    '광진구',
+    '동대문구',
+    '중랑구',
+    '성북구',
+    '강북구',
+    '도봉구',
+    '노원구',
+    '은평구',
+    '서대문구',
+    '마포구',
+    '양천구',
+    '강서구',
+    '구로구',
+    '금천구',
+    '영등포구',
+    '동작구',
+    '관악구',
+    '서초구',
+    '강남구',
+    '송파구',
+    '강동구'
+  ];
+
+  final busan = [
+    '중구',
+    '서구',
+    '동구',
+    '영도구',
+    '부산진구',
+    '동래구',
+    '남구',
+    '북구',
+    '해운대구',
+    '사하구',
+    '금정구',
+    '강서구',
+    '연제구',
+    '수영구',
+    '사상구',
+    '기장군'
+  ];
+
+  final daegu = [
+    '중구',
+    '서구',
+    '동구',
+    '남구',
+    '북구',
+    '수성구',
+    '달서구',
+    '달성군',
+    '군위군',
+  ];
+
+  final incheon = [
+    '중구',
+    '동구',
+    '미추홀구',
+    '연수구',
+    '남동구',
+    '부평구',
+    '계양구',
+    '서구',
+    '강화군',
+    '옹진군',
+  ];
+  final gwangju = [
+    '북구',
+    '동구',
+    '서구',
+    '남구',
+    '광산구',
+  ];
+  final daegeon = [
+    '중구',
+    '동구',
+    '서구',
+    '유성구',
+    '대덕구',
+  ];
+  final ulsan = [
+    '중구',
+    '남구',
+    '동구',
+    '북구',
+    '울주군',
+  ];
+
+  final nothingToSelect = [
+    '선택할 시/구가 없습니다.',
+  ];
+
+  String? provinceValue = null;
+  String? cityValue = null;
+  List<String> cities = ['도를 먼저 선택해주세요'];
+  String? guValue = null;
   String? email, password, name, country, province, city, ward;
   File? selectedImage;
   IconLabel? selectedIcon;
@@ -332,7 +432,7 @@ class _RegisterPageState extends State<RegisterPage> {
               children: [
                 _pfpSelectionField(),
                 CustomFormField(
-                  hintText: "Name",
+                  hintText: "닉네임",
                   height: MediaQuery.sizeOf(context).height * 0.1,
                   validationRegEx: NAME_VALIDATION_REGEX,
                   onSaved: (value) {
@@ -342,7 +442,7 @@ class _RegisterPageState extends State<RegisterPage> {
                   },
                 ),
                 CustomFormField(
-                  hintText: "Email",
+                  hintText: "이메일",
                   height: MediaQuery.sizeOf(context).height * 0.1,
                   validationRegEx: EMAIL_VALIDATION_REGEX,
                   onSaved: (value) {
@@ -352,7 +452,7 @@ class _RegisterPageState extends State<RegisterPage> {
                   },
                 ),
                 CustomFormField(
-                  hintText: "Password",
+                  hintText: "비밀번호",
                   height: MediaQuery.sizeOf(context).height * 0.1,
                   validationRegEx: PASSWORD_VALIDATION_REGEX,
                   obscureText: true,
@@ -363,47 +463,7 @@ class _RegisterPageState extends State<RegisterPage> {
                   },
                 ),
                 _province(),
-                _city(),
-                // CustomFormField(
-                //   hintText: "국가",
-                //   height: MediaQuery.sizeOf(context).height * 0.1,
-                //   validationRegEx: NAME_VALIDATION_REGEX,
-                //   onSaved: (value) {
-                //     setState(() {
-                //       country = value;
-                //     });
-                //   },
-                // ),
-                // CustomFormField(
-                //   hintText: "도",
-                //   height: MediaQuery.sizeOf(context).height * 0.1,
-                //   validationRegEx: NAME_VALIDATION_REGEX,
-                //   onSaved: (value) {
-                //     setState(() {
-                //       province = value;
-                //     });
-                //   },
-                // ),
-                // CustomFormField(
-                //   hintText: "시",
-                //   height: MediaQuery.sizeOf(context).height * 0.1,
-                //   validationRegEx: NAME_VALIDATION_REGEX,
-                //   onSaved: (value) {
-                //     setState(() {
-                //       city = value;
-                //     });
-                //   },
-                // ),
-                // CustomFormField(
-                //   hintText: "구",
-                //   height: MediaQuery.sizeOf(context).height * 0.1,
-                //   validationRegEx: NAME_VALIDATION_REGEX,
-                //   onSaved: (value) {
-                //     setState(() {
-                //       ward = value;
-                //     });
-                //   },
-                // ),
+                _city(cities),
               ],
             ),
             _registerButton(),
@@ -437,6 +497,8 @@ class _RegisterPageState extends State<RegisterPage> {
                         userProfile: UserProfile(
                             uid: _authService.user!.uid,
                             name: name,
+                            province: provinceValue,
+                            city: cityValue,
                             pfpURL: pfpURL),
                       );
                       _alertService.showToast(
@@ -444,21 +506,25 @@ class _RegisterPageState extends State<RegisterPage> {
                         icon: Icons.check,
                       );
                       _navigationService.goBack();
-                      _navigationService.pushReplacementNamed("/home");
+                      _navigationService.pushReplacementNamed("/transaction");
                     } else {
                       throw Exception("프로필 사진 등록을 할 수 없습니다.");
                     }
                   } else {
                     await _databaseService.createUserProfile(
                       userProfile: UserProfile(
-                          uid: _authService.user!.uid, name: name, pfpURL: ""),
+                          uid: _authService.user!.uid,
+                          name: name,
+                          province: provinceValue,
+                          city: cityValue,
+                          pfpURL: ""),
                     );
                     _alertService.showToast(
                       text: "회원가입이 완료되었습니다.",
                       icon: Icons.check,
                     );
                     _navigationService.goBack();
-                    _navigationService.pushReplacementNamed("/home");
+                    _navigationService.pushReplacementNamed("/transaction");
                   }
                 } else {
                   throw Exception("회원가입을 할 수 없습니다.");
@@ -476,7 +542,7 @@ class _RegisterPageState extends State<RegisterPage> {
             });
           },
           child: const Text(
-            "Register",
+            "회원가입",
             style: TextStyle(
               color: Colors.white,
             ),
@@ -518,7 +584,7 @@ class _RegisterPageState extends State<RegisterPage> {
               decoration: InputDecoration(
                   enabledBorder: UnderlineInputBorder(
                       borderSide: BorderSide(color: Colors.white))),
-              hint: Text("도를 선택해주세요"),
+              hint: Text("시/도를 선택해주세요"),
               //value: dropdownvalue,
               items: provinces
                   .map((e) => DropdownMenuItem(
@@ -528,7 +594,42 @@ class _RegisterPageState extends State<RegisterPage> {
                   .toList(),
               onChanged: (val) {
                 setState(() {
-                  dropdownvalue = val as String;
+                  provinceValue = val as String;
+                  if (provinceValue == '경기도') {
+                    cities = gyunggi;
+                  } else if (provinceValue == '강원도') {
+                    cities = gangwon;
+                  } else if (provinceValue == '경상남도') {
+                    cities = gyungnam;
+                  } else if (provinceValue == '경상북도') {
+                    cities = gyungbuk;
+                  } else if (provinceValue == '충청남도') {
+                    cities = choongnam;
+                  } else if (provinceValue == '충청북도') {
+                    cities = choongbuk;
+                  } else if (provinceValue == '전라남도') {
+                    cities = geonnam;
+                  } else if (provinceValue == '전라북도') {
+                    cities = geonbuk;
+                  } else if (provinceValue == '제주도') {
+                    cities = jeju;
+                  } else if (provinceValue == '서울특별시') {
+                    cities = seoul;
+                  } else if (provinceValue == '부산광역시') {
+                    cities = busan;
+                  } else if (provinceValue == '대구광역시') {
+                    cities = daegu;
+                  } else if (provinceValue == '인천광역시') {
+                    cities = incheon;
+                  } else if (provinceValue == '광주광역시') {
+                    cities = gwangju;
+                  } else if (provinceValue == '대전광역시') {
+                    cities = daegeon;
+                  } else if (provinceValue == '울산광역시') {
+                    cities = ulsan;
+                  } else if (provinceValue == '세종특별자치시') {
+                    cities = nothingToSelect;
+                  }
                 });
               },
             ),
@@ -538,24 +639,22 @@ class _RegisterPageState extends State<RegisterPage> {
     );
   }
 
-  Widget _city() {
+  Widget _city(List<String> cities) {
     return Padding(
-      padding: EdgeInsets.only(left: 0, right: 0, top: 10),
+      padding: EdgeInsets.only(left: 0, right: 0, top: 15, bottom: 30),
       child: Align(
         alignment: Alignment.centerLeft,
         child: DropdownButtonHideUnderline(
           child: Container(
             padding: EdgeInsets.only(left: 10, right: 10),
             decoration: BoxDecoration(
-                color: Colors.grey[200],
-                borderRadius: BorderRadius.circular(5)),
+              color: Colors.grey[200],
+              borderRadius: BorderRadius.circular(5),
+            ),
             child: DropdownButtonFormField(
-              decoration: InputDecoration(
-                  enabledBorder: UnderlineInputBorder(
-                      borderSide: BorderSide(color: Colors.white))),
-              hint: Text("시를 선택해주세요"),
+              hint: Text("구/시를 선택해주세요"),
               //value: dropdownvalue,
-              items: provinces
+              items: cities
                   .map((e) => DropdownMenuItem(
                         child: Text(e),
                         value: e,
@@ -563,32 +662,13 @@ class _RegisterPageState extends State<RegisterPage> {
                   .toList(),
               onChanged: (val) {
                 setState(() {
-                  dropdownvalue = val as String;
+                  cityValue = val as String;
                 });
               },
             ),
           ),
         ),
       ),
-    );
-  }
-
-  Widget _provinceField() {
-    return DropdownButton(
-      iconSize: 24,
-      value: dropdownvalue,
-      items: provinces
-          .map((e) => DropdownMenuItem(
-                child: Text(e),
-                value: e,
-              ))
-          .toList(),
-      onChanged: (val) {
-        setState(() {
-          dropdownvalue = val as String;
-        });
-      },
-      icon: const Icon(Icons.arrow_drop_down),
     );
   }
 

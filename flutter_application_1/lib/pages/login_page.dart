@@ -136,7 +136,7 @@ class _LoginPageState extends State<LoginPage> {
               print(email);
               bool result = await _authService.login(email!, password!);
               if (result) {
-                _navigationService.pushReplacementNamed('/home');
+                _navigationService.pushReplacementNamed('/transaction');
               } else {
                 _alertService.showToast(
                   text: "아이디 또는 비밀번호가 일치하지 않습니다.",

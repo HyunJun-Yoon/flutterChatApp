@@ -11,7 +11,15 @@ class AuthService {
 
   AuthService() {
     _firebaseAuth.authStateChanges().listen(authStateChangesStreamListner);
+    _firebaseAuth.authStateChanges().listen((User? user) {
+      _user = user;
+    });
   }
+
+  Future<User?> getCurrentUser() async {
+    return _firebaseAuth.currentUser;
+  }
+
 
   Future<bool> login(String email, String password) async {
     try {

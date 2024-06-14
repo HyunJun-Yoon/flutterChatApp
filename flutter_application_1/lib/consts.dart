@@ -9,3 +9,6 @@ final RegExp NAME_VALIDATION_REGEX =
 
 final String PLACEHOLDER_PFP =
     "https://t3.ftcdn.net/jpg/05/16/27/58/360_F_516275801_f3Fsp17x6HQK0xQgDQEELoTuER045SsWV.jpg";
+
+final RegExp CONTENT_VALIDATION_REGEX =
+    RegExp(r"^[가-힣]{2,50}|[a-zA-Z]{2,50}\s[a-zA-Z]{2,50}$");

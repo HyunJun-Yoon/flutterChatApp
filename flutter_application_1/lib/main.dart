@@ -40,7 +40,7 @@ class MyApp extends StatelessWidget {
         useMaterial3: true,
         textTheme: GoogleFonts.doHyeonTextTheme(),
       ),
-      initialRoute: _authService.user != null ? "/home" : "/login",
+      initialRoute: _authService.user != null ? "/transaction" : "/login",
       routes: _navigationService.routes,
     );
   }

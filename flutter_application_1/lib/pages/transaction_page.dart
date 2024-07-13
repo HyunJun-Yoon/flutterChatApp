@@ -5,6 +5,7 @@ import 'package:flutter_application_1/consts.dart';
 import 'package:flutter_application_1/models/user_profile.dart';
 import 'package:flutter_application_1/pages/chat_page.dart';
 import 'package:flutter_application_1/pages/messages_page.dart';
+import 'package:flutter_application_1/pages/setting_page.dart';
 import 'package:flutter_application_1/services/alert_service.dart';
 import 'package:flutter_application_1/services/auth_service.dart';
 import 'package:flutter_application_1/services/database_service.dart';
@@ -15,18 +16,20 @@ import 'package:flutter_application_1/widgets/post.dart';
 import 'package:flutter_application_1/widgets/text_field.dart';
 import 'package:get_it/get_it.dart';
 
-class Transactionpage extends StatefulWidget {
-  const Transactionpage({super.key});
+class TransactionPage extends StatefulWidget {
+  const TransactionPage({super.key});
 
   @override
-  State<Transactionpage> createState() => _TransactionpageState();
+  State<TransactionPage> createState() => _TransactionPageState();
 }
 
-class _TransactionpageState extends State<Transactionpage>
+class _TransactionPageState extends State<TransactionPage>
     with SingleTickerProviderStateMixin {
   final GetIt _getIt = GetIt.instance;
   final text1Controller = TextEditingController();
   final text2Controller = TextEditingController();
+  final text3Controller = TextEditingController();
+  final text4Controller = TextEditingController();
   late AuthService _authService;
   late NavigationService _navigationService;
   late AlertService _alertService;
@@ -150,6 +153,100 @@ class _TransactionpageState extends State<Transactionpage>
     }
   }
 
+  void postBuyMessage() {
+    if (searchProvince != null && searchCity != null) {
+      if (text3Controller.text.isNotEmpty && text4Controller.text.isNotEmpty) {
+        FirebaseFirestore.instance.collection("BuyPosts").add({
+          'UserId': _authService.user!.uid,
+          'UserFirstName': userName,
+          'UserProvince': userProvince,
+          'UserCity': userCity,
+          'TransactionProvince': searchProvince,
+          'TransactionCity': searchCity,
+          'UserPFP': userPFP,
+          'Quantity': int.parse(text3Controller.text),
+          'MO': int.parse(text4Controller.text),
+          'TimeStamp': Timestamp.now(),
+        }).then((_) {
+          // Post added successfully, show success message
+          showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                title: Text("구매글 등록이 완료 되었습니다."),
+                actions: [
+                  TextButton(
+                    onPressed: () {
+                      Navigator.of(context).pop(); // Close the dialog
+                      togglePostingVisibility();
+                    },
+                    child: Text("OK"),
+                  ),
+                ],
+              );
+            },
+          );
+        }).catchError((error) {
+          // Handle error if the post couldn't be added
+          showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                title: Text("Error"),
+                content: Text("An error occurred while adding your post."),
+                actions: [
+                  TextButton(
+                    onPressed: () {
+                      Navigator.of(context).pop(); // Close the dialog
+                    },
+                    child: Text("OK"),
+                  ),
+                ],
+              );
+            },
+          );
+        });
+      } else {
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: Text("구매하실 내용을 입력해주세요."),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop(); // Close the dialog
+                  },
+                  child: Text("OK"),
+                ),
+              ],
+            );
+          },
+        );
+        return;
+      }
+    } else {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text("먼저 거래 지역 설정을 해주세요."),
+            content: Text("상단 '거래 지역 선택' 메뉴에서 거래 지역을 선택해주세요."),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop(); // Close the dialog
+                },
+                child: Text("OK"),
+              ),
+            ],
+          );
+        },
+      );
+      return;
+    }
+  }
+
   void togglePostingVisibility() {
     setState(() {
       isPostingVisible = !isPostingVisible;
@@ -158,7 +255,13 @@ class _TransactionpageState extends State<Transactionpage>
   }
 
   String calculate() {
-    if (text1Controller.text.isNotEmpty && text2Controller.text.isNotEmpty) {
+    if (text3Controller.text.isNotEmpty && text4Controller.text.isNotEmpty) {
+      int value1 = int.parse(text3Controller.text);
+      int value2 = int.parse(text4Controller.text);
+      int multiply = value1 * value2;
+      result = multiply.toString();
+    } else if (text1Controller.text.isNotEmpty &&
+        text2Controller.text.isNotEmpty) {
       int value1 = int.parse(text1Controller.text);
       int value2 = int.parse(text2Controller.text);
       int multiply = value1 * value2;
@@ -222,7 +325,7 @@ class _TransactionpageState extends State<Transactionpage>
                 title: Text(
                   item,
                   style: TextStyle(
-                    color: searchProvince == item
+                    color: userProvince == item
                         ? Theme.of(context).colorScheme.primary
                         : null,
                   ),
@@ -598,7 +701,28 @@ class _TransactionpageState extends State<Transactionpage>
           elevation: 0,
           actions: [
             IconButton(
-              onPressed: () {},
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => SettingPage(
+                      userName: userName,
+                      userUid: userUid,
+                      userPFP: userPFP,
+                      userProvince: userProvince,
+                      userCity: userCity,
+                      userEmail: loggedInUser?.email,
+                    ),
+                  ),
+                );
+              },
+              color: Colors.white,
+              icon: const Icon(Icons.person),
+            ),
+            IconButton(
+              onPressed: () {
+                _navigationService.pushNamed("/messages");
+              },
               color: Colors.white,
               icon: const Icon(Icons.message),
             ),
@@ -637,7 +761,7 @@ class _TransactionpageState extends State<Transactionpage>
         ),
         body: TabBarView(
           children: [
-            // Content for the "Buy" tab
+            // Content for the "Sell" tab
             Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.start,
@@ -650,12 +774,24 @@ class _TransactionpageState extends State<Transactionpage>
                       },
                       style: ButtonStyle(
                         backgroundColor: MaterialStateProperty.all<Color>(
-                            Color.fromARGB(255, 194, 217, 247)),
+                          Color.fromARGB(255, 194, 217, 247),
+                        ),
                         shape:
                             MaterialStateProperty.all<RoundedRectangleBorder>(
                           RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(0),
                           ),
+                        ),
+                        padding: MaterialStateProperty.all<EdgeInsetsGeometry>(
+                          EdgeInsets.only(
+                              bottom: 1,
+                              left: 12,
+                              right: 12), // **Remove top padding**
+                        ),
+                        // Optionally, adjust the minimum size to prevent changes in button size
+                        minimumSize: MaterialStateProperty.all<Size>(
+                          Size.fromHeight(
+                              48), // Example height, adjust as needed
                         ),
                       ),
                       child: Row(
@@ -681,58 +817,63 @@ class _TransactionpageState extends State<Transactionpage>
                           .snapshots(),
                       builder: (context, snapshot) {
                         if (snapshot.hasData) {
-                          return ListView.builder(
-                            itemCount: snapshot.data!.docs.length,
-                            itemBuilder: (context, index) {
-                              final post = snapshot.data!.docs[index];
-                              return Post(
-                                quantity: post['Quantity'],
-                                mo: post['MO'],
-                                user: post['UserFirstName'],
-                                userUid: post['UserId'],
-                                postingTime: post['TimeStamp'],
-                                userPfp: post['UserPFP'],
-                                userProvince: post['UserProvince'],
-                                userCity: post['UserCity'],
-                                transactionProvince:
-                                    post['TransactionProvince'],
-                                transactionCity: post['TransactionCity'],
-                                searchProvince: searchProvince,
-                                searchCity: searchCity,
-                                loggedInUseruid: loggedInUser!.uid,
-                                onTap: () async {
-                                  try {
-                                    UserProfile user =
-                                        await getClickedUser(post['UserId']);
-                                    final chatExists =
-                                        await _databaseService.checkChatExits(
-                                      _authService.user!.uid,
-                                      user.uid!,
-                                    );
-                                    if (!chatExists) {
-                                      await _databaseService.createNewChat(
+                          return Container(
+                            color: Color.fromARGB(255, 255, 255,
+                                255), // Background color for the ListView
+                            child: ListView.builder(
+                              itemCount: snapshot.data!.docs.length,
+                              itemBuilder: (context, index) {
+                                final post = snapshot.data!.docs[index];
+                                return Post(
+                                  quantity: post['Quantity'],
+                                  mo: post['MO'],
+                                  postId: post.id,
+                                  user: post['UserFirstName'],
+                                  userUid: post['UserId'],
+                                  postingTime: post['TimeStamp'],
+                                  userPfp: post['UserPFP'],
+                                  userProvince: post['UserProvince'],
+                                  userCity: post['UserCity'],
+                                  transactionProvince:
+                                      post['TransactionProvince'],
+                                  transactionCity: post['TransactionCity'],
+                                  searchProvince: searchProvince,
+                                  searchCity: searchCity,
+                                  loggedInUseruid: loggedInUser!.uid,
+                                  onTap: () async {
+                                    try {
+                                      UserProfile user =
+                                          await getClickedUser(post['UserId']);
+                                      final chatExists =
+                                          await _databaseService.checkChatExits(
                                         _authService.user!.uid,
                                         user.uid!,
                                       );
+                                      if (!chatExists) {
+                                        await _databaseService.createNewChat(
+                                          _authService.user!.uid,
+                                          user.uid!,
+                                        );
+                                      }
+                                      _navigationService.push(
+                                        MaterialPageRoute(
+                                          builder: (context) {
+                                            return ChatPage(chatUser: user);
+                                          },
+                                        ),
+                                      );
+                                    } catch (e) {
+                                      print('Error fetching user data: $e');
+                                      // Handle the error appropriately, such as showing an error message
                                     }
-                                    _navigationService.push(
-                                      MaterialPageRoute(
-                                        builder: (context) {
-                                          return ChatPage(chatUser: user);
-                                        },
-                                      ),
-                                    );
-                                  } catch (e) {
-                                    print('Error fetching user data: $e');
-                                    // Handle the error appropriately, such as showing an error message
-                                  }
-                                },
-                              );
-                            },
+                                  },
+                                );
+                              },
+                            ),
                           );
                         } else if (snapshot.hasError) {
                           return Center(
-                            child: Text('Error:${snapshot.error}'),
+                            child: Text('Error: ${snapshot.error}'),
                           );
                         }
                         return const Center(
@@ -746,33 +887,29 @@ class _TransactionpageState extends State<Transactionpage>
                     children: [
                       Visibility(
                         visible: isPostingVisible,
-                        child: Padding(
-                          padding: const EdgeInsets.only(right: 16, bottom: 2),
-                          child: GestureDetector(
-                            onTap: togglePostingVisibility,
-                            child: Container(
-                              alignment: Alignment.bottomRight,
-                              child: Icon(
-                                Icons.remove_circle_outline,
-                                size: 20,
-                                color: Color.fromARGB(255, 202, 89, 80),
-                              ),
+                        child: GestureDetector(
+                          onTap: togglePostingVisibility,
+                          child: Container(
+                            alignment: Alignment.bottomRight,
+                            child: Icon(
+                              Icons.remove_circle_outline,
+                              size: 20,
+                              color: Color.fromARGB(255, 202, 89, 80),
                             ),
                           ),
                         ),
                       ),
-                      if (!isPostingVisible)
-                        Padding(
-                          padding: const EdgeInsets.all(16),
-                          child: GestureDetector(
-                            onTap: togglePostingVisibility,
-                            child: Container(
-                              alignment: Alignment.bottomRight,
-                              child: Icon(
-                                Icons.add_circle_outlined,
-                                size: 45,
-                                color: Color.fromARGB(255, 14, 102, 174),
-                              ),
+                      if (!isPostingVisible &&
+                          searchProvince != null &&
+                          searchCity != null)
+                        GestureDetector(
+                          onTap: togglePostingVisibility,
+                          child: Container(
+                            alignment: Alignment.bottomRight,
+                            child: Icon(
+                              Icons.add_circle_outlined,
+                              size: 45,
+                              color: Color.fromARGB(255, 14, 102, 174),
                             ),
                           ),
                         ),
@@ -937,9 +1074,317 @@ class _TransactionpageState extends State<Transactionpage>
                 ],
               ),
             ),
-            // Content for the "Sell" tab
+            // Content for the "Buy" tab
             Center(
-              child: Text('Content for Sell tab'),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  Container(
+                    width: MediaQuery.of(context).size.width,
+                    child: ElevatedButton(
+                      onPressed: () {
+                        _showDropdownMenu(context);
+                      },
+                      style: ButtonStyle(
+                        backgroundColor: MaterialStateProperty.all<Color>(
+                          Color.fromARGB(255, 194, 217, 247),
+                        ),
+                        shape:
+                            MaterialStateProperty.all<RoundedRectangleBorder>(
+                          RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(0),
+                          ),
+                        ),
+                        padding: MaterialStateProperty.all<EdgeInsetsGeometry>(
+                          EdgeInsets.only(
+                              bottom: 1,
+                              left: 12,
+                              right: 12), // **Remove top padding**
+                        ),
+                        // Optionally, adjust the minimum size to prevent changes in button size
+                        minimumSize: MaterialStateProperty.all<Size>(
+                          Size.fromHeight(
+                              48), // Example height, adjust as needed
+                        ),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          SizedBox(width: 8),
+                          Text(
+                            buttonLabel,
+                          ),
+                          Icon(Icons.arrow_drop_down),
+                        ],
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    child: StreamBuilder(
+                      stream: FirebaseFirestore.instance
+                          .collection("BuyPosts")
+                          .orderBy(
+                            "TimeStamp",
+                            descending: true,
+                          )
+                          .snapshots(),
+                      builder: (context, snapshot) {
+                        if (snapshot.hasData) {
+                          return ListView.builder(
+                            itemCount: snapshot.data!.docs.length,
+                            itemBuilder: (context, index) {
+                              final post = snapshot.data!.docs[index];
+                              return Post(
+                                quantity: post['Quantity'],
+                                mo: post['MO'],
+                                postId: post.id,
+                                user: post['UserFirstName'],
+                                userUid: post['UserId'],
+                                postingTime: post['TimeStamp'],
+                                userPfp: post['UserPFP'],
+                                userProvince: post['UserProvince'],
+                                userCity: post['UserCity'],
+                                transactionProvince:
+                                    post['TransactionProvince'],
+                                transactionCity: post['TransactionCity'],
+                                searchProvince: searchProvince,
+                                searchCity: searchCity,
+                                loggedInUseruid: loggedInUser!.uid,
+                                onTap: () async {
+                                  try {
+                                    UserProfile user =
+                                        await getClickedUser(post['UserId']);
+                                    final chatExists =
+                                        await _databaseService.checkChatExits(
+                                      _authService.user!.uid,
+                                      user.uid!,
+                                    );
+                                    if (!chatExists) {
+                                      await _databaseService.createNewChat(
+                                        _authService.user!.uid,
+                                        user.uid!,
+                                      );
+                                    }
+                                    _navigationService.push(
+                                      MaterialPageRoute(
+                                        builder: (context) {
+                                          return ChatPage(chatUser: user);
+                                        },
+                                      ),
+                                    );
+                                  } catch (e) {
+                                    print('Error fetching user data: $e');
+                                    // Handle the error appropriately, such as showing an error message
+                                  }
+                                },
+                              );
+                            },
+                          );
+                        } else if (snapshot.hasError) {
+                          return Center(
+                            child: Text('Error:${snapshot.error}'),
+                          );
+                        }
+                        return const Center(
+                          child: CircularProgressIndicator(),
+                        );
+                      },
+                    ),
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      Visibility(
+                        visible: isPostingVisible,
+                        child: Padding(
+                          padding: const EdgeInsets.only(right: 16, bottom: 2),
+                          child: GestureDetector(
+                            onTap: togglePostingVisibility,
+                            child: Container(
+                              alignment: Alignment.bottomRight,
+                              child: Icon(
+                                Icons.remove_circle_outline,
+                                size: 20,
+                                color: Color.fromARGB(255, 202, 89, 80),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                      if (!isPostingVisible &&
+                          searchProvince != null &&
+                          searchCity != null)
+                        GestureDetector(
+                          onTap: togglePostingVisibility,
+                          child: Container(
+                            alignment: Alignment.bottomRight,
+                            child: Icon(
+                              Icons.add_circle_outlined,
+                              size: 45,
+                              color: Color.fromARGB(255, 14, 102, 174),
+                            ),
+                          ),
+                        ),
+                    ],
+                  ),
+                  Visibility(
+                    visible: isPostingVisible,
+                    child: Padding(
+                      padding: const EdgeInsets.all(10.0),
+                      child: Column(
+                        children: [
+                          Row(
+                            children: [
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      '구매글 작성하기',
+                                      style: TextStyle(
+                                        color: Colors.black,
+                                        fontSize: 25.0,
+                                      ),
+                                    ),
+                                    SizedBox(
+                                        height: 10), // Add s// New input box
+                                    Row(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
+                                      children: [
+                                        Expanded(
+                                          child: MyTextField(
+                                            controller:
+                                                text4Controller, // New controller for the new text field
+                                            hintText:
+                                                "단위 가격/MO", // Hint text for the new input box
+                                            obscureText: false,
+                                            defaultText: "KRW",
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    SizedBox(
+                                        height:
+                                            10), // Add some space between the input boxes
+                                    // Original input box
+                                    Row(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
+                                      children: [
+                                        Expanded(
+                                          child: MyTextField(
+                                            controller: text3Controller,
+                                            hintText: "수량",
+                                            obscureText: false,
+                                            defaultText: "MO",
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    SizedBox(
+                                        height:
+                                            10), // Add some space between the input boxes
+                                    // Original input box
+                                    Row(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
+                                      children: [
+                                        Padding(
+                                          padding: const EdgeInsets.only(
+                                              right: 20,
+                                              left:
+                                                  10), // Padding for the title
+                                          child: Text(
+                                            '총 거래대금:',
+                                            style: TextStyle(
+                                              fontSize: 16.0,
+                                              color: Colors.black,
+                                            ),
+                                          ),
+                                        ),
+                                        Expanded(
+                                          child: Container(
+                                            decoration: BoxDecoration(
+                                              border: Border(
+                                                bottom: BorderSide(
+                                                  color: Color.fromARGB(255, 94,
+                                                      93, 93), // Border color
+                                                  width: 1.0, // Border width
+                                                ),
+                                              ),
+                                            ),
+                                            padding: EdgeInsets.only(
+                                                bottom:
+                                                    10), // Padding only at the bottom
+                                            child: Row(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.center,
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.end,
+                                              children: [
+                                                Text(
+                                                  calculate(),
+                                                  style: TextStyle(
+                                                    fontSize: 16.0,
+                                                    color: Colors.black,
+                                                  ),
+                                                ),
+                                                SizedBox(
+                                                    width:
+                                                        5), // Add some space between the result and currency
+                                                Text(
+                                                  '원/KRW', // Currency symbol
+                                                  style: TextStyle(
+                                                    fontSize: 16.0,
+                                                    color: const Color.fromARGB(
+                                                        255, 128, 127, 127),
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+                                        SizedBox(
+                                            width:
+                                                10), // Add some space between the text and the title
+                                      ],
+                                    ),
+
+                                    SizedBox(height: 10),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                          // Submit bar button
+                          Container(
+                            width: double.infinity,
+                            height: 50.0,
+                            child: ElevatedButton(
+                              onPressed: postBuyMessage,
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor:
+                                    Color.fromARGB(255, 194, 217, 247),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(0),
+                                ),
+                              ),
+                              child: Text(
+                                '등록하기',
+                                style: TextStyle(
+                                  fontSize: 16.0,
+                                  color: Theme.of(context).colorScheme.primary,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  )
+                ],
+              ),
             ),
           ],
         ),

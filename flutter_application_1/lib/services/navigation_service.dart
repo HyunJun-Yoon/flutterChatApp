@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/pages/account_page.dart';
 import 'package:flutter_application_1/pages/home_page.dart';
 import 'package:flutter_application_1/pages/login_page.dart';
 import 'package:flutter_application_1/pages/messages_page.dart';
 import 'package:flutter_application_1/pages/register_page.dart';
 import 'package:flutter_application_1/pages/transaction_page.dart';
+import 'package:flutter_application_1/pages/setting_page.dart';
 
 class NavigationService {
   late GlobalKey<NavigatorState> _navigatorKey;
@@ -11,9 +13,9 @@ class NavigationService {
   final Map<String, Widget Function(BuildContext)> _routes = {
     "/login": (context) => LoginPage(),
     "/register": (context) => RegisterPage(),
-    "/home": (context) => Homepage(),
-    "/transaction": (context) => Transactionpage(),
-    "/messages": (context) => Messagespage(),
+    "/home": (context) => HomePage(),
+    "/transaction": (context) => TransactionPage(),
+    "/messages": (context) => MessagesPage(),
   };
 
   GlobalKey<NavigatorState>? get navigatorKey {

@@ -8,14 +8,14 @@ import 'package:flutter_application_1/services/navigation_service.dart';
 import 'package:flutter_application_1/widgets/chat_tile.dart';
 import 'package:get_it/get_it.dart';
 
-class Homepage extends StatefulWidget {
-  const Homepage({super.key});
+class HomePage extends StatefulWidget {
+  const HomePage({super.key});
 
   @override
-  State<Homepage> createState() => _HomepageState();
+  State<HomePage> createState() => _HomePageState();
 }
 
-class _HomepageState extends State<Homepage> {
+class _HomePageState extends State<HomePage> {
   final GetIt _getIt = GetIt.instance;
 
   late AuthService _authService;

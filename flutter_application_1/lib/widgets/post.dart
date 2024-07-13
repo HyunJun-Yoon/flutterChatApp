@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 class Post extends StatelessWidget {
   final int quantity;
   final int mo;
+  final String postId;
   final String user;
   final String? userUid;
   final String? userPfp;
@@ -22,6 +23,7 @@ class Post extends StatelessWidget {
     Key? key,
     required this.quantity,
     required this.mo,
+    required this.postId,
     required this.user,
     required this.userUid,
     required this.userPfp,
@@ -122,12 +124,21 @@ class Post extends StatelessWidget {
                         ),
                       ),
                       if (loggedInUseruid != null && userUid == loggedInUseruid)
-                        IconButton(
-                          onPressed: () {
-                            // Implement edit functionality here
-                            print('Edit button pressed');
-                          },
-                          icon: Icon(Icons.edit),
+                        Row(
+                          children: [
+                            IconButton(
+                              onPressed: () {
+                                _showEditDialog(context);
+                              },
+                              icon: Icon(Icons.edit),
+                            ),
+                            IconButton(
+                              onPressed: () {
+                                _confirmDelete(context);
+                              },
+                              icon: Icon(Icons.delete),
+                            ),
+                          ],
                         ),
                     ],
                   ),
@@ -197,5 +208,116 @@ class Post extends StatelessWidget {
             ),
           )
         : SizedBox();
+  }
+
+  void _showEditDialog(BuildContext context) {
+    TextEditingController quantityController =
+        TextEditingController(text: quantity.toString());
+    TextEditingController moController =
+        TextEditingController(text: mo.toString());
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      builder: (BuildContext context) {
+        return Padding(
+          padding:
+              EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                TextField(
+                  controller: quantityController,
+                  keyboardType: TextInputType.number,
+                  decoration: InputDecoration(labelText: '수량'),
+                ),
+                TextField(
+                  controller: moController,
+                  keyboardType: TextInputType.number,
+                  decoration: InputDecoration(labelText: 'MO'),
+                ),
+                SizedBox(height: 20),
+                ElevatedButton(
+                  onPressed: () {
+                    int updatedQuantity = int.parse(quantityController.text);
+                    int updatedMo = int.parse(moController.text);
+
+                    FirebaseFirestore.instance
+                        .collection('User Posts')
+                        .doc(postId)
+                        .update({
+                      'Quantity': updatedQuantity,
+                      'MO': updatedMo,
+                    }).then((_) {
+                      Navigator.pop(context);
+                      _showDialog(context, "게시글이 업데이트 되었습니다.");
+                    }).catchError((error) {
+                      print("업데이트에 실패하였습니다.: $error");
+                    });
+                  },
+                  child: Text('업데이트'),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  void _confirmDelete(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("삭제 확인"),
+          content: Text("정말로 이 게시글을 삭제하시겠습니까?"),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text("취소"),
+            ),
+            TextButton(
+              onPressed: () {
+                FirebaseFirestore.instance
+                    .collection('User Posts')
+                    .doc(postId)
+                    .delete()
+                    .then((_) {
+                  Navigator.of(context).pop();
+                  _showDialog(context, "게시글이 삭제 되었습니다.");
+                }).catchError((error) {
+                  print("삭제에 실패하였습니다.: $error");
+                });
+              },
+              child: Text("삭제"),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _showDialog(BuildContext context, String message) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(message),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text("OK"),
+            ),
+          ],
+        );
+      },
+    );
   }
 }

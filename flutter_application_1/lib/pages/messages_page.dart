@@ -8,14 +8,14 @@ import 'package:flutter_application_1/services/navigation_service.dart';
 import 'package:flutter_application_1/widgets/chat_tile.dart';
 import 'package:get_it/get_it.dart';
 
-class Messagespage extends StatefulWidget {
-  const Messagespage({super.key});
+class MessagesPage extends StatefulWidget {
+  const MessagesPage({super.key});
 
   @override
-  State<Messagespage> createState() => _MessagespageState();
+  State<MessagesPage> createState() => _MessagesPageState();
 }
 
-class _MessagespageState extends State<Messagespage> {
+class _MessagesPageState extends State<MessagesPage> {
   final GetIt _getIt = GetIt.instance;
 
   late AuthService _authService;

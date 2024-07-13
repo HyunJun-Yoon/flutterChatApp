@@ -39,6 +39,10 @@ class DatabaseService {
     await _usersCollection?.doc(userProfile.uid).set(userProfile);
   }
 
+  Future<void> updateUserProfile({required UserProfile userProfile}) async {
+    await _usersCollection?.doc(userProfile.uid).set(userProfile);
+  }
+
   Stream<QuerySnapshot<UserProfile>> getUserProfiles() {
     return _usersCollection
         ?.where("uid", isNotEqualTo: _authService.user!.uid)

@@ -10,6 +10,7 @@ class SettingPage extends StatefulWidget {
   final userProvince;
   final userCity;
   final userEmail;
+  final VoidCallback onSettingsUpdated;
 
   const SettingPage({
     super.key,
@@ -19,6 +20,7 @@ class SettingPage extends StatefulWidget {
     required this.userProvince,
     required this.userCity,
     required this.userEmail,
+    required this.onSettingsUpdated,
   });
 
   @override
@@ -65,6 +67,7 @@ class _SettingPageState extends State<SettingPage> {
                       userProvince: widget.userProvince,
                       userCity: widget.userCity,
                       userEmail: widget.userEmail,
+                      onSettingsUpdated: widget.onSettingsUpdated,
                     ),
                   ),
                 );

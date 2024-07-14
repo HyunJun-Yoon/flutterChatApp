@@ -673,6 +673,10 @@ class _TransactionPageState extends State<TransactionPage>
     }
   }
 
+  void refreshUserInfo() async {
+    await getUserInfo();
+  }
+
   Future<UserProfile> getClickedUser(String uid) async {
     DocumentSnapshot documentSnapshot =
         await FirebaseFirestore.instance.collection('users').doc(uid).get();
@@ -712,6 +716,7 @@ class _TransactionPageState extends State<TransactionPage>
                       userProvince: userProvince,
                       userCity: userCity,
                       userEmail: loggedInUser?.email,
+                      onSettingsUpdated: refreshUserInfo,
                     ),
                   ),
                 );

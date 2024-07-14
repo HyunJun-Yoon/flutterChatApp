@@ -18,6 +18,7 @@ class AccountSettingPage extends StatefulWidget {
   final String userProvince;
   final String userCity;
   final String userEmail;
+  final VoidCallback? onSettingsUpdated;
 
   const AccountSettingPage({
     super.key,
@@ -27,6 +28,7 @@ class AccountSettingPage extends StatefulWidget {
     required this.userProvince,
     required this.userCity,
     required this.userEmail,
+    required this.onSettingsUpdated,
   });
 
   @override
@@ -288,6 +290,7 @@ class _AccountSettingPageState extends State<AccountSettingPage> {
           ),
         );
 
+        widget.onSettingsUpdated!();
         _alertService.showToast(
           text: "계정 정보가 업데이트되었습니다.",
           icon: Icons.check,

@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/pages/account_page.dart';
+import 'package:flutter_application_1/pages/cart_page.dart';
 import 'package:flutter_application_1/pages/home_page.dart';
 import 'package:flutter_application_1/pages/login_page.dart';
 import 'package:flutter_application_1/pages/messages_page.dart';
 import 'package:flutter_application_1/pages/register_page.dart';
+import 'package:flutter_application_1/pages/store_page.dart';
 import 'package:flutter_application_1/pages/transaction_page.dart';
 import 'package:flutter_application_1/pages/setting_page.dart';
 
@@ -16,6 +18,8 @@ class NavigationService {
     "/home": (context) => HomePage(),
     "/transaction": (context) => TransactionPage(),
     "/messages": (context) => MessagesPage(),
+    "/store": (context) => StorePage(),
+    "/cart": (context) => CartPage(),
   };
 
   GlobalKey<NavigatorState>? get navigatorKey {

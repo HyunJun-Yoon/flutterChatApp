@@ -706,6 +706,13 @@ class _TransactionPageState extends State<TransactionPage>
           actions: [
             IconButton(
               onPressed: () {
+                _navigationService.pushNamed("/store");
+              },
+              color: Colors.white,
+              icon: const Icon(Icons.store),
+            ),
+            IconButton(
+              onPressed: () {
                 Navigator.push(
                   context,
                   MaterialPageRoute(

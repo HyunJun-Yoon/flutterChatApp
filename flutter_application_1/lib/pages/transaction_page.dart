@@ -48,6 +48,7 @@ class _TransactionPageState extends State<TransactionPage>
   var searchCity;
   var result;
   String buttonLabel = '거래 지역 선택';
+  int _selectedIndex = 0;
 
   @override
   void initState() {
@@ -697,20 +698,29 @@ class _TransactionPageState extends State<TransactionPage>
       length: 2,
       child: Scaffold(
         appBar: AppBar(
-          title: const Text(
-            "거래 목록",
-            style: TextStyle(color: Colors.white),
-          ),
-          backgroundColor: Theme.of(context).colorScheme.primary,
+          backgroundColor: Colors.transparent,
           elevation: 0,
-          actions: [
-            IconButton(
-              onPressed: () {
-                _navigationService.pushNamed("/store");
-              },
-              color: Colors.white,
-              icon: const Icon(Icons.store),
+          flexibleSpace: Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  Color.fromARGB(255, 14, 80, 186).withOpacity(0.8),
+                  Color.fromARGB(255, 3, 25, 59)
+                ],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
             ),
+          ),
+          title: const Text(
+            "로컬 모빅 거래소",
+            style: TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          centerTitle: true,
+          actions: [
             IconButton(
               onPressed: () {
                 Navigator.push(
@@ -730,13 +740,6 @@ class _TransactionPageState extends State<TransactionPage>
               },
               color: Colors.white,
               icon: const Icon(Icons.person),
-            ),
-            IconButton(
-              onPressed: () {
-                _navigationService.pushNamed("/messages");
-              },
-              color: Colors.white,
-              icon: const Icon(Icons.message),
             ),
             IconButton(
               onPressed: () async {
@@ -768,7 +771,7 @@ class _TransactionPageState extends State<TransactionPage>
             labelColor: Color.fromARGB(
                 255, 255, 255, 255), // Color of the selected tab label
             unselectedLabelColor: Color.fromARGB(
-                255, 44, 44, 44), // Color of the unselected tab labels
+                255, 144, 143, 143), // Color of the unselected tab labels
           ),
         ),
         body: TabBarView(
@@ -1399,6 +1402,39 @@ class _TransactionPageState extends State<TransactionPage>
               ),
             ),
           ],
+        ),
+        bottomNavigationBar: BottomNavigationBar(
+          items: const <BottomNavigationBarItem>[
+            BottomNavigationBarItem(
+              icon: Icon(Icons.repeat),
+              label: '거래소',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.store),
+              label: '굿즈샵',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.message),
+              label: '메세지',
+            ),
+          ],
+          currentIndex: _selectedIndex ?? 0, // Add null check
+          selectedItemColor: Theme.of(context).colorScheme.primary,
+          unselectedItemColor:
+              Colors.grey, // Optional: Set unselected item color
+          type: BottomNavigationBarType.fixed, // Add this line
+          onTap: (index) {
+            setState(() {
+              _selectedIndex = index; // Update the selected index
+            });
+            if (index == 0) {
+              _navigationService.pushReplacementNamed("/transaction");
+            } else if (index == 1) {
+              _navigationService.pushReplacementNamed("/store");
+            } else if (index == 2) {
+              _navigationService.pushReplacementNamed("/messages");
+            }
+          },
         ),
       ),
     );

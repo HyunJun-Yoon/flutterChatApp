@@ -65,8 +65,8 @@ class Post extends StatelessWidget {
 
     Color backgroundColor = loggedInUseruid != null &&
             userUid == loggedInUseruid
-        ? Color.fromARGB(255, 245, 206, 208) // Light pink for logged-in user
-        : Color.fromARGB(255, 255, 255, 255); // Light blue for others
+        ? Color.fromARGB(255, 156, 177, 207) // Light pink for logged-in user
+        : Color.fromARGB(255, 244, 244, 244); // Light blue for others
 
     return showPost
         ? GestureDetector(
@@ -137,6 +137,7 @@ class Post extends StatelessWidget {
                                 _confirmDelete(context);
                               },
                               icon: Icon(Icons.delete),
+                              color: Color.fromARGB(255, 224, 114, 106),
                             ),
                           ],
                         ),

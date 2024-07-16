@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/services/navigation_service.dart';
 import 'package:get_it/get_it.dart';
+import 'package:intl/intl.dart';
 
 class CartPage extends StatefulWidget {
   const CartPage({super.key});
@@ -12,6 +13,7 @@ class CartPage extends StatefulWidget {
 class _CartPageState extends State<CartPage> {
   final GetIt _getIt = GetIt.instance;
   late NavigationService _navigationService;
+  final currencyFormatter = NumberFormat.currency(locale: 'ko_KR', symbol: '₩');
 
   final List<CartItem> _cartItems = [
     CartItem(
@@ -60,6 +62,20 @@ class _CartPageState extends State<CartPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        flexibleSpace: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [
+                Color.fromARGB(255, 39, 89, 164).withOpacity(0.8),
+                Color.fromARGB(255, 224, 155, 130),
+              ],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+          ),
+        ),
         title: Text(
           '카트',
           style: TextStyle(
@@ -67,13 +83,11 @@ class _CartPageState extends State<CartPage> {
           ),
         ),
         centerTitle: true,
-        backgroundColor: Color.fromARGB(255, 12, 84, 57), // Dark Green
-        elevation: 0,
       ),
       body: _cartItems.isEmpty
           ? Center(
               child: Text(
-                'Your cart is empty.',
+                '카트가 비어있습니다.',
                 style: TextStyle(
                   fontSize: 18,
                   color: Colors.black54,
@@ -114,32 +128,39 @@ class _CartPageState extends State<CartPage> {
                               style: TextStyle(
                                 fontWeight: FontWeight.bold,
                                 fontSize: 16,
+                                color: Color.fromARGB(255, 55, 54, 54),
                               ),
                             ),
                             subtitle: Text(
                               '\$${item.price.toStringAsFixed(2)}',
                               style: TextStyle(
-                                color: Colors.deepOrange,
+                                color: Color.fromARGB(255, 55, 54, 54),
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
                             trailing: SizedBox(
-                              width: 150, // Adjusted width for trailing content
+                              width: 170, // Adjusted width for trailing content
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.end,
                                 children: [
                                   IconButton(
                                     icon: Icon(Icons.remove),
                                     onPressed: () => _decreaseQuantity(item),
-                                    color: Color.fromARGB(
-                                        255, 12, 84, 57), // Dark Green
+                                    color: Theme.of(context)
+                                        .primaryColor, // Dark Green
                                   ),
-                                  Text('${item.quantity}'),
+                                  Text(
+                                    '${item.quantity}',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 11,
+                                    ),
+                                  ),
                                   IconButton(
                                     icon: Icon(Icons.add),
                                     onPressed: () => _increaseQuantity(item),
-                                    color: Color.fromARGB(
-                                        255, 12, 84, 57), // Dark Green
+                                    color: Theme.of(context)
+                                        .primaryColor, // Dark Green
                                   ),
                                   IconButton(
                                     icon: Icon(Icons.delete),
@@ -168,11 +189,11 @@ class _CartPageState extends State<CartPage> {
                           ),
                         ),
                         Text(
-                          '\$${_totalPrice.toStringAsFixed(2)}',
+                          '${currencyFormatter.format(_totalPrice)}',
                           style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
-                            color: Colors.deepOrange,
+                            color: Color.fromARGB(255, 55, 54, 54),
                           ),
                         ),
                       ],
@@ -185,7 +206,7 @@ class _CartPageState extends State<CartPage> {
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor:
-                            Color.fromARGB(255, 89, 149, 239), // Dark Green
+                            Color.fromARGB(255, 118, 168, 243), // Dark Green
 
                         textStyle: TextStyle(
                           fontSize: 18,
@@ -194,7 +215,7 @@ class _CartPageState extends State<CartPage> {
                       child: Text(
                         '구매하기',
                         style: TextStyle(
-                          fontSize: 18,
+                          fontSize: 15,
                           color: const Color.fromARGB(255, 255, 255, 255),
                           fontWeight:
                               FontWeight.bold, // Change to red text color

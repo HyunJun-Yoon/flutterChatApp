@@ -22,6 +22,7 @@ class _MessagesPageState extends State<MessagesPage> {
   late NavigationService _navigationService;
   late AlertService _alertService;
   late DatabaseService _databaseService;
+  int _selectedIndex = 2;
 
   @override
   void initState() {
@@ -35,12 +36,64 @@ class _MessagesPageState extends State<MessagesPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: const Text(
-            "Messages",
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        flexibleSpace: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [
+                Color.fromARGB(255, 87, 109, 101).withOpacity(0.8),
+                Color.fromARGB(255, 20, 81, 63),
+              ],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
           ),
         ),
-        body: _buildUI()); //Image.asset('assets/images/logo.png'));
+        title: Text(
+          '메세지',
+          style: TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        centerTitle: true,
+      ),
+      body: _buildUI(),
+      bottomNavigationBar: BottomNavigationBar(
+        items: const <BottomNavigationBarItem>[
+          BottomNavigationBarItem(
+            icon: Icon(Icons.repeat),
+            label: '거래소',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.store),
+            label: '굿즈샵',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.message),
+            label: '메세지',
+          ),
+        ],
+        currentIndex: _selectedIndex, // No null check needed
+        selectedItemColor: Theme.of(context).colorScheme.primary,
+        unselectedItemColor: Colors.grey, // Optional: Set unselected item color
+        type: BottomNavigationBarType.fixed, // Add this line
+        onTap: (index) {
+          setState(() {
+            _selectedIndex = index; // Update the selected index
+          });
+          if (index == 0) {
+            _navigationService.pushReplacementNamed("/transaction");
+          } else if (index == 1) {
+            _navigationService.pushReplacementNamed("/store");
+          } else if (index == 2) {
+            _navigationService.pushReplacementNamed("/messages");
+          }
+        },
+      ),
+    ); //Image.asset('assets/images/logo.png'));
   }
 
   Widget _buildUI() {

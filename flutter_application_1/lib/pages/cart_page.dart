@@ -1,4 +1,6 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/services/auth_service.dart';
 import 'package:flutter_application_1/services/navigation_service.dart';
 import 'package:get_it/get_it.dart';
 import 'package:intl/intl.dart';
@@ -13,25 +15,48 @@ class CartPage extends StatefulWidget {
 class _CartPageState extends State<CartPage> {
   final GetIt _getIt = GetIt.instance;
   late NavigationService _navigationService;
+  late AuthService _authService;
   final currencyFormatter = NumberFormat.currency(locale: 'ko_KR', symbol: '₩');
 
-  final List<CartItem> _cartItems = [
-    CartItem(
-      id: '1',
-      name: 'Product 1',
-      price: 10.99,
-      quantity: 1,
-      imageUrl: 'https://via.placeholder.com/150',
-    ),
-    CartItem(
-      id: '2',
-      name: 'Product 2',
-      price: 20.99,
-      quantity: 2,
-      imageUrl: 'https://via.placeholder.com/150',
-    ),
-    // Add more items as needed
-  ];
+  final List<CartItem> _cartItems = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _navigationService = _getIt.get<NavigationService>();
+    _authService = _getIt.get<AuthService>();
+    getUserCartInfo(); // Fetch cart items when initializing
+  }
+
+  Future<void> getUserCartInfo() async {
+    final userId = _authService.user!.uid;
+
+    // Query the user's cart items from Firestore
+    QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+        .collection('User Cart')
+        .where('UserId', isEqualTo: userId)
+        .get();
+
+    // Clear the existing cart items
+    _cartItems.clear();
+
+    // Populate _cartItems with data from Firestore
+    for (var doc in querySnapshot.docs) {
+      var data = doc.data() as Map<String, dynamic>;
+      _cartItems.add(CartItem(
+        id: doc.id,
+        name: data['name'].toString(),
+        price: double.tryParse(data['price'].toString()) ?? 0.0,
+        quantity: data['quantity'] != null
+            ? int.parse(data['quantity'].toString())
+            : 1,
+        imageUrl: data['image'].toString(),
+      ));
+    }
+
+    // Refresh the UI
+    setState(() {});
+  }
 
   double get _totalPrice {
     return _cartItems.fold(
@@ -116,7 +141,7 @@ class _CartPageState extends State<CartPage> {
                             ),
                             leading: ClipRRect(
                               borderRadius: BorderRadius.circular(8),
-                              child: Image.network(
+                              child: Image.asset(
                                 item.imageUrl,
                                 width: 80,
                                 height: 80,
@@ -127,12 +152,12 @@ class _CartPageState extends State<CartPage> {
                               item.name,
                               style: TextStyle(
                                 fontWeight: FontWeight.bold,
-                                fontSize: 16,
+                                fontSize: 13,
                                 color: Color.fromARGB(255, 55, 54, 54),
                               ),
                             ),
                             subtitle: Text(
-                              '\$${item.price.toStringAsFixed(2)}',
+                              '${currencyFormatter.format(item.price)}',
                               style: TextStyle(
                                 color: Color.fromARGB(255, 55, 54, 54),
                                 fontWeight: FontWeight.bold,

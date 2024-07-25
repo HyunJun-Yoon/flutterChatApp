@@ -1,4 +1,6 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/services/auth_service.dart';
 import 'package:flutter_application_1/services/navigation_service.dart';
 import 'package:get_it/get_it.dart';
 
@@ -12,12 +14,78 @@ class StorePage extends StatefulWidget {
 class _StorePageState extends State<StorePage> {
   final GetIt _getIt = GetIt.instance;
   late NavigationService _navigationService;
+  late AuthService _authService;
   int _selectedIndex = 1;
+
+  // Define a list of products
+  final List<Map<String, dynamic>> products = [
+    {
+      'name': '비트모빅 종이지갑',
+      'description':
+          'This is a short product description to give more details about the item.',
+      'price': '99.99',
+      'image': 'assets/images/paper.jpg',
+    },
+    {
+      'name': '비트모빅 티셔츠',
+      'description': 'A stylish backpack suitable for all occasions.',
+      'price': '79.99',
+      'image': 'assets/images/shirt.jpg',
+    },
+    // Add more products as needed
+  ];
 
   @override
   void initState() {
     super.initState();
     _navigationService = _getIt.get<NavigationService>();
+    _authService = _getIt.get<AuthService>();
+  }
+
+  void addToCart(Map<String, dynamic> product) async {
+    final userId = _authService.user!.uid;
+
+    // Query Firestore to check if the item is already in the cart
+    final querySnapshot = await FirebaseFirestore.instance
+        .collection("User Cart")
+        .where('UserId', isEqualTo: userId)
+        .where('name', isEqualTo: product['name'])
+        .get();
+
+    if (querySnapshot.docs.isEmpty) {
+      // If the item is not in the cart, add it
+      FirebaseFirestore.instance.collection("User Cart").add({
+        'UserId': userId,
+        'name': product['name'],
+        'description': product['description'],
+        'price': product['price'],
+        'image': product['image'],
+        'quantity': 1,
+      }).then((_) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              '선택하신 상품이 카트에 담겼습니다.',
+              style: TextStyle(color: Colors.white), // Text color
+            ),
+            duration: Duration(seconds: 1),
+            backgroundColor: Colors.blue, // Set your desired color here
+          ),
+        );
+      });
+    } else {
+      // Item is already in the cart
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            '이미 카트에 담긴 상품입니다.',
+            style: TextStyle(color: Colors.white),
+          ),
+          duration: Duration(seconds: 1),
+          backgroundColor: Colors.red, // Use a different color for error
+        ),
+      );
+    }
   }
 
   @override
@@ -59,8 +127,9 @@ class _StorePageState extends State<StorePage> {
       body: Padding(
         padding: const EdgeInsets.all(8.0),
         child: ListView.builder(
-          itemCount: 3, // Number of items
+          itemCount: products.length, // Use the length of the products list
           itemBuilder: (context, index) {
+            final product = products[index];
             return Card(
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(15),
@@ -80,7 +149,7 @@ class _StorePageState extends State<StorePage> {
                       ClipRRect(
                         borderRadius: BorderRadius.circular(10),
                         child: Image.asset(
-                          'assets/images/paper.jpg',
+                          product['image'], // Use the product's image
                           width: 100,
                           height: 130,
                           fit: BoxFit.cover,
@@ -92,7 +161,7 @@ class _StorePageState extends State<StorePage> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              '비트모빅 종이지갑',
+                              product['name'], // Use the product's name
                               style: TextStyle(
                                 fontSize: 18,
                                 fontWeight: FontWeight.bold,
@@ -102,7 +171,8 @@ class _StorePageState extends State<StorePage> {
                             ),
                             SizedBox(height: 4),
                             Text(
-                              'This is a short product description to give more details about the item.',
+                              product[
+                                  'description'], // Use the product's description
                               style: TextStyle(
                                 fontSize: 14,
                                 color: Colors.grey[700],
@@ -115,7 +185,7 @@ class _StorePageState extends State<StorePage> {
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Text(
-                                  '\$99.99',
+                                  product['price'], // Use the product's price
                                   style: TextStyle(
                                     fontSize: 16,
                                     color: Color.fromARGB(255, 55, 54, 54),
@@ -124,7 +194,7 @@ class _StorePageState extends State<StorePage> {
                                 ),
                                 ElevatedButton(
                                   onPressed: () {
-                                    // Implement add to cart functionality
+                                    addToCart(product);
                                   },
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor:

@@ -1,8 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/pages/productDetail_page.dart';
 import 'package:flutter_application_1/services/auth_service.dart';
 import 'package:flutter_application_1/services/navigation_service.dart';
 import 'package:get_it/get_it.dart';
+import 'package:intl/intl.dart';
 
 class StorePage extends StatefulWidget {
   const StorePage({super.key});
@@ -16,6 +18,7 @@ class _StorePageState extends State<StorePage> {
   late NavigationService _navigationService;
   late AuthService _authService;
   int _selectedIndex = 1;
+  final currencyFormatter = NumberFormat.currency(locale: 'ko_KR', symbol: '₩');
 
   // Define a list of products
   final List<Map<String, dynamic>> products = [
@@ -23,13 +26,13 @@ class _StorePageState extends State<StorePage> {
       'name': '비트모빅 종이지갑',
       'description':
           'This is a short product description to give more details about the item.',
-      'price': '99.99',
+      'price': '5000',
       'image': 'assets/images/paper.jpg',
     },
     {
       'name': '비트모빅 티셔츠',
       'description': 'A stylish backpack suitable for all occasions.',
-      'price': '79.99',
+      'price': '32000',
       'image': 'assets/images/shirt.jpg',
     },
     // Add more products as needed
@@ -140,6 +143,14 @@ class _StorePageState extends State<StorePage> {
               child: InkWell(
                 onTap: () {
                   // Navigate to product details
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => ProductDetailPage(
+                        product: product, // Pass the product data here
+                      ),
+                    ),
+                  );
                 },
                 child: Padding(
                   padding: const EdgeInsets.all(12.0),
@@ -185,7 +196,7 @@ class _StorePageState extends State<StorePage> {
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Text(
-                                  product['price'], // Use the product's price
+                                  '${currencyFormatter.format(double.tryParse(product['price']))}', // Use the product's price
                                   style: TextStyle(
                                     fontSize: 16,
                                     color: Color.fromARGB(255, 55, 54, 54),

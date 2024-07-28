@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/pages/checkout_page.dart';
 import 'package:flutter_application_1/services/auth_service.dart';
 import 'package:flutter_application_1/services/navigation_service.dart';
 import 'package:get_it/get_it.dart';
@@ -77,10 +78,53 @@ class _CartPageState extends State<CartPage> {
     }
   }
 
-  void _removeItem(CartItem item) {
-    setState(() {
-      _cartItems.remove(item);
-    });
+  void _removeItem(CartItem item) async {
+    final userId = _authService.user!.uid;
+
+    // Query Firestore to find the item in the cart
+    final querySnapshot = await FirebaseFirestore.instance
+        .collection("User Cart")
+        .where('UserId', isEqualTo: userId)
+        .where('name', isEqualTo: item.name)
+        .get();
+
+    if (querySnapshot.docs.isNotEmpty) {
+      // If the item is found, remove it
+      for (var doc in querySnapshot.docs) {
+        await FirebaseFirestore.instance
+            .collection("User Cart")
+            .doc(doc.id)
+            .delete();
+      }
+
+      // Remove the item from the local list and update the UI
+      setState(() {
+        _cartItems.remove(item);
+      });
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            '상품이 카트에서 삭제되었습니다.',
+            style: TextStyle(color: Colors.white),
+          ),
+          duration: Duration(seconds: 1),
+          backgroundColor: Colors.green, // Use a color for successful removal
+        ),
+      );
+    } else {
+      // If the item is not found in the cart
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            '카트에 상품이 없습니다.',
+            style: TextStyle(color: Colors.white),
+          ),
+          duration: Duration(seconds: 1),
+          backgroundColor: Colors.orange, // Use a different color for warning
+        ),
+      );
+    }
   }
 
   @override
@@ -227,6 +271,12 @@ class _CartPageState extends State<CartPage> {
                   SizedBox(height: 16), // Adjusted spacing for the button
                   ElevatedButton(
                       onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => CheckoutPage(),
+                          ),
+                        );
                         // Implement checkout functionality
                       },
                       style: ElevatedButton.styleFrom(

@@ -7,7 +7,6 @@ import 'package:flutter_application_1/pages/messages_page.dart';
 import 'package:flutter_application_1/pages/register_page.dart';
 import 'package:flutter_application_1/pages/store_page.dart';
 import 'package:flutter_application_1/pages/transaction_page.dart';
-import 'package:flutter_application_1/pages/setting_page.dart';
 
 class NavigationService {
   late GlobalKey<NavigatorState> _navigatorKey;

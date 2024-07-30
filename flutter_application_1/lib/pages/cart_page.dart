@@ -64,17 +64,55 @@ class _CartPageState extends State<CartPage> {
         0, (sum, item) => sum + (item.price * item.quantity));
   }
 
-  void _increaseQuantity(CartItem item) {
+  void _increaseQuantity(CartItem item) async {
     setState(() {
       item.quantity++;
     });
+
+    final userId = _authService.user!.uid;
+
+    // Query Firestore to find the item in the cart
+    final querySnapshot = await FirebaseFirestore.instance
+        .collection("User Cart")
+        .where('UserId', isEqualTo: userId)
+        .where('name', isEqualTo: item.name)
+        .get();
+
+    if (querySnapshot.docs.isNotEmpty) {
+      // If the item is found, update its quantity
+      for (var doc in querySnapshot.docs) {
+        await FirebaseFirestore.instance
+            .collection("User Cart")
+            .doc(doc.id)
+            .update({'quantity': item.quantity});
+      }
+    }
   }
 
-  void _decreaseQuantity(CartItem item) {
+  void _decreaseQuantity(CartItem item) async {
     if (item.quantity > 1) {
       setState(() {
         item.quantity--;
       });
+
+      final userId = _authService.user!.uid;
+
+      // Query Firestore to find the item in the cart
+      final querySnapshot = await FirebaseFirestore.instance
+          .collection("User Cart")
+          .where('UserId', isEqualTo: userId)
+          .where('name', isEqualTo: item.name)
+          .get();
+
+      if (querySnapshot.docs.isNotEmpty) {
+        // If the item is found, update its quantity
+        for (var doc in querySnapshot.docs) {
+          await FirebaseFirestore.instance
+              .collection("User Cart")
+              .doc(doc.id)
+              .update({'quantity': item.quantity});
+        }
+      }
     }
   }
 

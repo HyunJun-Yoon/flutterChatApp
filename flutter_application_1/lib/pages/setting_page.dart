@@ -10,6 +10,8 @@ class SettingPage extends StatefulWidget {
   final userProvince;
   final userCity;
   final userEmail;
+  final totalTransaction;
+  final numberOfTransaction;
   final VoidCallback onSettingsUpdated;
 
   const SettingPage({
@@ -20,6 +22,8 @@ class SettingPage extends StatefulWidget {
     required this.userProvince,
     required this.userCity,
     required this.userEmail,
+    required this.totalTransaction,
+    required this.numberOfTransaction,
     required this.onSettingsUpdated,
   });
 
@@ -28,7 +32,6 @@ class SettingPage extends StatefulWidget {
 }
 
 class _SettingPageState extends State<SettingPage> {
-  // Variable to manage notification settings
   final GetIt _getIt = GetIt.instance;
   bool notificationsEnabled = true;
   late NavigationService _navigationService;
@@ -52,6 +55,7 @@ class _SettingPageState extends State<SettingPage> {
         child: ListView(
           padding: const EdgeInsets.all(20),
           children: [
+            _transactionSummary(), // Add the transaction summary widget
             _settingsOption(
               context: context,
               title: '계정 설정',
@@ -67,6 +71,8 @@ class _SettingPageState extends State<SettingPage> {
                       userProvince: widget.userProvince,
                       userCity: widget.userCity,
                       userEmail: widget.userEmail,
+                      numberOfTransaction: widget.numberOfTransaction,
+                      totalTransaction: widget.totalTransaction,
                       onSettingsUpdated: widget.onSettingsUpdated,
                     ),
                   ),
@@ -76,26 +82,19 @@ class _SettingPageState extends State<SettingPage> {
             _settingsOption(
               context: context,
               title: '현재 등급',
-              icon: Icons.bar_chart, // Remove the icon
-              trailingText: '일반 등급', // Add your own text here
+              icon: Icons.bar_chart,
+              trailingText: '일반 등급',
               trailingTextStyle: TextStyle(
-                color: Color.fromARGB(255, 0, 0, 0), // Custom color
-                fontSize: 16.0, // Custom font size
-                fontWeight: FontWeight.w400, // Custom font weight
+                color: Color.fromARGB(255, 0, 0, 0),
+                fontSize: 16.0,
+                fontWeight: FontWeight.w400,
               ),
               onTap: () {
                 // Navigate to Current Level Page
               },
             ),
-            _notificationSetting(), // Notification setting with switch
-            _settingsOption(
-              context: context,
-              title: '사용자 가이드',
-              icon: Icons.help_outline,
-              onTap: () {
-                // Navigate to User Guide Page
-              },
-            ),
+            _notificationSetting(),
+
             _settingsOption(
               context: context,
               title: '고객센터',
@@ -118,12 +117,79 @@ class _SettingPageState extends State<SettingPage> {
     );
   }
 
+  Widget _transactionSummary() {
+    return Card(
+      elevation: 3,
+      margin: const EdgeInsets.symmetric(vertical: 12.0),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Icon(Icons.monetization_on,
+                    color: Theme.of(context).colorScheme.primary, size: 24),
+                SizedBox(width: 8),
+                Text(
+                  '거래 정보',
+                  style: TextStyle(
+                    fontSize: 18.0,
+                    fontWeight: FontWeight.bold,
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(height: 16),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                _infoTile('거래 수', widget.numberOfTransaction.toString(),
+                    Icons.list_alt),
+                _infoTile(
+                    '총 금액', '₩${widget.totalTransaction}', Icons.attach_money),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _infoTile(String label, String value, IconData icon) {
+    return Column(
+      children: [
+        Icon(icon, color: Theme.of(context).colorScheme.primary, size: 30),
+        SizedBox(height: 8),
+        Text(
+          label,
+          style: TextStyle(
+            fontSize: 14.0,
+            fontWeight: FontWeight.w600,
+            color: Colors.grey[700],
+          ),
+        ),
+        SizedBox(height: 4),
+        Text(
+          value,
+          style: TextStyle(
+            fontSize: 16.0,
+            fontWeight: FontWeight.bold,
+            color: Colors.black,
+          ),
+        ),
+      ],
+    );
+  }
+
   Widget _settingsOption({
     required BuildContext context,
     required String title,
-    IconData? icon, // Icon is now optional
-    Widget? leading, // Added leading for text
-    String? trailingText, // Added trailingText for custom text
+    IconData? icon,
+    Widget? leading,
+    String? trailingText,
     TextStyle? trailingTextStyle,
     required Function() onTap,
   }) {
@@ -149,9 +215,7 @@ class _SettingPageState extends State<SettingPage> {
                       fontSize: 14.0,
                     ),
               )
-            : Icon(Icons.arrow_forward_ios,
-                color: Colors.blueGrey[
-                    700]), // Default to arrow icon if no trailing text is provided
+            : Icon(Icons.arrow_forward_ios, color: Colors.blueGrey[700]),
         onTap: onTap,
       ),
     );

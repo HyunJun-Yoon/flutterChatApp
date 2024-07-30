@@ -203,11 +203,14 @@ class _RegisterPageState extends State<RegisterPage> {
                     if (pfpURL != null) {
                       await _databaseService.createUserProfile(
                         userProfile: UserProfile(
-                            uid: _authService.user!.uid,
-                            name: name,
-                            province: provinceValue,
-                            city: cityValue,
-                            pfpURL: pfpURL),
+                          uid: _authService.user!.uid,
+                          name: name,
+                          province: provinceValue,
+                          city: cityValue,
+                          pfpURL: pfpURL,
+                          numberOfTransaction: 0,
+                          totalTransaction: 0,
+                        ),
                       );
                       _alertService.showToast(
                         text: "회원가입이 완료되었습니다.",
@@ -221,11 +224,14 @@ class _RegisterPageState extends State<RegisterPage> {
                   } else {
                     await _databaseService.createUserProfile(
                       userProfile: UserProfile(
-                          uid: _authService.user!.uid,
-                          name: name,
-                          province: provinceValue,
-                          city: cityValue,
-                          pfpURL: ""),
+                        uid: _authService.user!.uid,
+                        name: name,
+                        province: provinceValue,
+                        city: cityValue,
+                        pfpURL: "",
+                        numberOfTransaction: 0,
+                        totalTransaction: 0,
+                      ),
                     );
                     _alertService.showToast(
                       text: "회원가입이 완료되었습니다.",

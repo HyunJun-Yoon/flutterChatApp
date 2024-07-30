@@ -47,6 +47,8 @@ class _TransactionPageState extends State<TransactionPage>
   var searchProvince;
   var searchCity;
   var result;
+  var numberOfTransaction;
+  var totalTransaction;
   String buttonLabel = '거래 지역 선택';
   int _selectedIndex = 0;
 
@@ -671,6 +673,8 @@ class _TransactionPageState extends State<TransactionPage>
       userPFP = data['pfpURL'].toString();
       userProvince = data['province'].toString();
       userCity = data['city'].toString();
+      numberOfTransaction = data['numberOfTransaction'];
+      totalTransaction = data['totalTransaction'];
     }
   }
 
@@ -734,6 +738,8 @@ class _TransactionPageState extends State<TransactionPage>
                       userCity: userCity,
                       userEmail: loggedInUser?.email,
                       onSettingsUpdated: refreshUserInfo,
+                      numberOfTransaction: numberOfTransaction,
+                      totalTransaction: totalTransaction,
                     ),
                   ),
                 );

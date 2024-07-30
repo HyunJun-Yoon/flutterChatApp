@@ -18,6 +18,8 @@ class AccountSettingPage extends StatefulWidget {
   final String userProvince;
   final String userCity;
   final String userEmail;
+  final totalTransaction;
+  final numberOfTransaction;
   final VoidCallback? onSettingsUpdated;
 
   const AccountSettingPage({
@@ -28,6 +30,8 @@ class AccountSettingPage extends StatefulWidget {
     required this.userProvince,
     required this.userCity,
     required this.userEmail,
+    required this.totalTransaction,
+    required this.numberOfTransaction,
     required this.onSettingsUpdated,
   });
 
@@ -287,6 +291,8 @@ class _AccountSettingPageState extends State<AccountSettingPage> {
             province: provinceValue,
             city: cityValue,
             pfpURL: pfpURL,
+            totalTransaction: widget.totalTransaction,
+            numberOfTransaction: widget.numberOfTransaction,
           ),
         );
 

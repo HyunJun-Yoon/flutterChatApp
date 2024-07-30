@@ -4,6 +4,8 @@ class UserProfile {
   String? province;
   String? city;
   String? pfpURL;
+  int? numberOfTransaction;
+  double? totalTransaction;
 
   UserProfile({
     required this.uid,
@@ -11,6 +13,8 @@ class UserProfile {
     required this.province,
     required this.city,
     required this.pfpURL,
+    required this.numberOfTransaction,
+    required this.totalTransaction,
   });
 
   UserProfile.fromJson(Map<String, dynamic> json) {
@@ -19,6 +23,8 @@ class UserProfile {
     province = json['province'];
     city = json['city'];
     pfpURL = json['pfpURL'];
+    numberOfTransaction = json['numberOfTransaction'];
+    totalTransaction = json['totalTransaction'];
   }
 
   Map<String, dynamic> toJson() {
@@ -28,6 +34,8 @@ class UserProfile {
     data['city'] = city;
     data['pfpURL'] = pfpURL;
     data['uid'] = uid;
+    data['numberOfTransaction'] = numberOfTransaction;
+    data['totalTransaction'] = totalTransaction;
     return data;
   }
 
@@ -38,6 +46,8 @@ class UserProfile {
       province: map['province'] as String,
       city: map['city'] as String,
       pfpURL: map['pfpURL'] as String,
+      numberOfTransaction: map['numberOfTransaction'] as int,
+      totalTransaction: map['totalTransaction'] as double,
     );
   }
 }

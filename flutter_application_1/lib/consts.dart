@@ -13,7 +13,7 @@ final String PLACEHOLDER_PFP =
 final RegExp CONTENT_VALIDATION_REGEX =
     RegExp(r"^[가-힣]{2,50}|[a-zA-Z]{2,50}\s[a-zA-Z]{2,50}$");
 
-final provinces = [
+const List<String> provinces = [
   '서울특별시',
   '부산광역시',
   '대구광역시',
@@ -33,7 +33,7 @@ final provinces = [
   '제주도',
 ];
 
-final gyunggi = [
+const List<String> gyunggi = [
   '수원시',
   '성남시',
   '용인시',
@@ -65,7 +65,7 @@ final gyunggi = [
   '포천시'
 ];
 
-final gangwon = [
+const List<String> gangwon = [
   '원주시',
   '춘천시',
   '강릉시',
@@ -86,7 +86,7 @@ final gangwon = [
   '양구군'
 ];
 
-final gyungnam = [
+const List<String> gyungnam = [
   '창원시',
   '김해시',
   '진주시',
@@ -107,7 +107,7 @@ final gyungnam = [
   '의령군'
 ];
 
-final gyungbuk = [
+const List<String> gyungbuk = [
   '포항시',
   '경주시',
   '김천시',
@@ -132,7 +132,7 @@ final gyungbuk = [
   '울릉군'
 ];
 
-final choongnam = [
+const List<String> choongnam = [
   '천안시',
   '공주시',
   '보령시',
@@ -150,7 +150,7 @@ final choongnam = [
   '태안군'
 ];
 
-final choongbuk = [
+const List<String> choongbuk = [
   '청주시',
   '충주시',
   '제천시',
@@ -164,7 +164,7 @@ final choongbuk = [
   '단양군'
 ];
 
-final geonnam = [
+const List<String> geonnam = [
   '목포시',
   '여수시',
   '순천시',
@@ -189,7 +189,7 @@ final geonnam = [
   '신안군'
 ];
 
-final geonbuk = [
+const List<String> geonbuk = [
   '전주시',
   '익산시',
   '군산시',
@@ -206,9 +206,9 @@ final geonbuk = [
   '장수군'
 ];
 
-final jeju = ['제주시', '서귀포시'];
+const List<String> jeju = ['제주시', '서귀포시'];
 
-final seoul = [
+const List<String> seoul = [
   '종로구',
   '중구',
   '용산구',
@@ -236,7 +236,7 @@ final seoul = [
   '강동구'
 ];
 
-final busan = [
+const List<String> busan = [
   '중구',
   '서구',
   '동구',
@@ -255,7 +255,7 @@ final busan = [
   '기장군'
 ];
 
-final daegu = [
+const List<String> daegu = [
   '중구',
   '서구',
   '동구',
@@ -267,7 +267,7 @@ final daegu = [
   '군위군',
 ];
 
-final incheon = [
+const List<String> incheon = [
   '중구',
   '동구',
   '미추홀구',
@@ -279,21 +279,21 @@ final incheon = [
   '강화군',
   '옹진군',
 ];
-final gwangju = [
+const List<String> gwangju = [
   '북구',
   '동구',
   '서구',
   '남구',
   '광산구',
 ];
-final daegeon = [
+const List<String> daegeon = [
   '중구',
   '동구',
   '서구',
   '유성구',
   '대덕구',
 ];
-final ulsan = [
+const List<String> ulsan = [
   '중구',
   '남구',
   '동구',
@@ -301,6 +301,6 @@ final ulsan = [
   '울주군',
 ];
 
-final nothingToSelect = [
+const List<String> nothingToSelect = [
   '선택할 시/구가 없습니다.',
 ];

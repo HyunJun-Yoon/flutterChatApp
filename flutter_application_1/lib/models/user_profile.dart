@@ -4,6 +4,7 @@ class UserProfile {
   String? province;
   String? city;
   String? pfpURL;
+  int? grade;
   int? numberOfTransaction;
   double? totalTransaction;
 
@@ -13,6 +14,7 @@ class UserProfile {
     required this.province,
     required this.city,
     required this.pfpURL,
+    required this.grade,
     required this.numberOfTransaction,
     required this.totalTransaction,
   });
@@ -23,6 +25,7 @@ class UserProfile {
     province = json['province'];
     city = json['city'];
     pfpURL = json['pfpURL'];
+    grade = json['grade'];
     numberOfTransaction = json['numberOfTransaction'];
     totalTransaction = json['totalTransaction'];
   }
@@ -34,6 +37,7 @@ class UserProfile {
     data['city'] = city;
     data['pfpURL'] = pfpURL;
     data['uid'] = uid;
+    data['grade'] = grade;
     data['numberOfTransaction'] = numberOfTransaction;
     data['totalTransaction'] = totalTransaction;
     return data;
@@ -46,6 +50,7 @@ class UserProfile {
       province: map['province'] as String,
       city: map['city'] as String,
       pfpURL: map['pfpURL'] as String,
+      grade: map['grade'] as int,
       numberOfTransaction: map['numberOfTransaction'] as int,
       totalTransaction: map['totalTransaction'] as double,
     );

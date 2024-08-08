@@ -47,6 +47,7 @@ class _TransactionPageState extends State<TransactionPage>
   var searchProvince;
   var searchCity;
   var result;
+  var grade;
   var numberOfTransaction;
   var totalTransaction;
   String buttonLabel = '거래 지역 선택';
@@ -673,6 +674,7 @@ class _TransactionPageState extends State<TransactionPage>
       userPFP = data['pfpURL'].toString();
       userProvince = data['province'].toString();
       userCity = data['city'].toString();
+      grade = data['grade'];
       numberOfTransaction = data['numberOfTransaction'];
       totalTransaction = data['totalTransaction'];
     }
@@ -738,6 +740,7 @@ class _TransactionPageState extends State<TransactionPage>
                       userCity: userCity,
                       userEmail: loggedInUser?.email,
                       onSettingsUpdated: refreshUserInfo,
+                      grade: grade,
                       numberOfTransaction: numberOfTransaction,
                       totalTransaction: totalTransaction,
                     ),
@@ -861,6 +864,9 @@ class _TransactionPageState extends State<TransactionPage>
                                   searchProvince: searchProvince,
                                   searchCity: searchCity,
                                   loggedInUseruid: loggedInUser!.uid,
+                                  grade: grade,
+                                  totalTransaction: totalTransaction,
+                                  numberOfTransaction: numberOfTransaction,
                                   onTap: () async {
                                     try {
                                       UserProfile user =
@@ -1170,6 +1176,9 @@ class _TransactionPageState extends State<TransactionPage>
                                 transactionCity: post['TransactionCity'],
                                 searchProvince: searchProvince,
                                 searchCity: searchCity,
+                                grade: grade,
+                                totalTransaction: totalTransaction,
+                                numberOfTransaction: numberOfTransaction,
                                 loggedInUseruid: loggedInUser!.uid,
                                 onTap: () async {
                                   try {

@@ -10,6 +10,7 @@ class SettingPage extends StatefulWidget {
   final userProvince;
   final userCity;
   final userEmail;
+  final grade;
   final totalTransaction;
   final numberOfTransaction;
   final VoidCallback onSettingsUpdated;
@@ -22,6 +23,7 @@ class SettingPage extends StatefulWidget {
     required this.userProvince,
     required this.userCity,
     required this.userEmail,
+    required this.grade,
     required this.totalTransaction,
     required this.numberOfTransaction,
     required this.onSettingsUpdated,
@@ -71,26 +73,13 @@ class _SettingPageState extends State<SettingPage> {
                       userProvince: widget.userProvince,
                       userCity: widget.userCity,
                       userEmail: widget.userEmail,
+                      grade: widget.grade,
                       numberOfTransaction: widget.numberOfTransaction,
                       totalTransaction: widget.totalTransaction,
                       onSettingsUpdated: widget.onSettingsUpdated,
                     ),
                   ),
                 );
-              },
-            ),
-            _settingsOption(
-              context: context,
-              title: '현재 등급',
-              icon: Icons.bar_chart,
-              trailingText: '일반 등급',
-              trailingTextStyle: TextStyle(
-                color: Color.fromARGB(255, 0, 0, 0),
-                fontSize: 16.0,
-                fontWeight: FontWeight.w400,
-              ),
-              onTap: () {
-                // Navigate to Current Level Page
               },
             ),
             _notificationSetting(),
@@ -127,29 +116,47 @@ class _SettingPageState extends State<SettingPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            // First row with "회원 거래 정보"
             Row(
               children: [
-                Icon(Icons.monetization_on,
-                    color: Theme.of(context).colorScheme.primary, size: 24),
+                Icon(
+                  Icons.info_outline,
+                  color: Theme.of(context).colorScheme.primary,
+                  size: 30,
+                ),
                 SizedBox(width: 8),
                 Text(
-                  '거래 정보',
+                  '회원 거래 정보',
                   style: TextStyle(
-                    fontSize: 18.0,
+                    fontSize: 20.0,
                     fontWeight: FontWeight.bold,
                     color: Theme.of(context).colorScheme.primary,
                   ),
                 ),
               ],
             ),
+            Divider(color: Colors.grey[300], thickness: 1.5),
             SizedBox(height: 16),
+            // Second row with all transaction details
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                _infoTile('거래 수', widget.numberOfTransaction.toString(),
-                    Icons.list_alt),
                 _infoTile(
-                    '총 금액', '₩${widget.totalTransaction}', Icons.attach_money),
+                  label: '현재 등급',
+                  value: widget.grade.toString(),
+                  icon: Icons.star,
+                  grade: widget.grade,
+                ),
+                _infoTile(
+                  label: '누적 거래 횟수',
+                  value: widget.numberOfTransaction.toString(),
+                  icon: Icons.list_alt,
+                ),
+                _infoTile(
+                  label: '누적 거래 금액',
+                  value: '₩${widget.totalTransaction}',
+                  icon: Icons.attach_money,
+                ),
               ],
             ),
           ],
@@ -158,29 +165,54 @@ class _SettingPageState extends State<SettingPage> {
     );
   }
 
-  Widget _infoTile(String label, String value, IconData icon) {
-    return Column(
-      children: [
-        Icon(icon, color: Theme.of(context).colorScheme.primary, size: 30),
-        SizedBox(height: 8),
-        Text(
-          label,
-          style: TextStyle(
-            fontSize: 14.0,
-            fontWeight: FontWeight.w600,
-            color: Colors.grey[700],
+  Widget _infoTile({
+    required String label,
+    required String value,
+    required IconData icon,
+    int grade = 0,
+  }) {
+    return Expanded(
+      child: Column(
+        children: [
+          SizedBox(height: 8),
+          Icon(icon, color: Theme.of(context).colorScheme.primary, size: 30),
+          SizedBox(height: 8),
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 14.0,
+              fontWeight: FontWeight.w600,
+              color: Colors.grey[700],
+            ),
+            textAlign: TextAlign.center,
           ),
-        ),
-        SizedBox(height: 4),
-        Text(
-          value,
-          style: TextStyle(
-            fontSize: 16.0,
-            fontWeight: FontWeight.bold,
-            color: Colors.black,
-          ),
-        ),
-      ],
+          SizedBox(height: 4),
+          // Display value only if the label is not "현재 등급"
+          if (label != '현재 등급')
+            Text(
+              value,
+              style: TextStyle(
+                fontSize: 16.0,
+                fontWeight: FontWeight.bold,
+                color: Colors.black,
+              ),
+              textAlign: TextAlign.center,
+            ),
+          // Add stars below the "현재 등급" text
+          if (label == '현재 등급')
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: List.generate(
+                3, // Always generate 3 stars
+                (index) => Icon(
+                  Icons.star,
+                  color: index < grade ? Colors.amber : Colors.grey,
+                  size: 24,
+                ),
+              ),
+            ),
+        ],
+      ),
     );
   }
 

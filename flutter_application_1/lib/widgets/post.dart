@@ -16,6 +16,9 @@ class Post extends StatelessWidget {
   final String? searchProvince;
   final String? searchCity;
   final String? loggedInUseruid;
+  final grade;
+  final numberOfTransaction;
+  final totalTransaction;
   final Function()? onTap;
   final Timestamp postingTime;
 
@@ -34,10 +37,12 @@ class Post extends StatelessWidget {
     required this.searchProvince,
     required this.searchCity,
     required this.postingTime,
+    required this.grade,
+    required this.numberOfTransaction,
+    required this.totalTransaction,
     required this.loggedInUseruid,
     this.onTap,
   }) : super(key: key);
-
   @override
   Widget build(BuildContext context) {
     bool showPost =
@@ -65,7 +70,7 @@ class Post extends StatelessWidget {
 
     Color backgroundColor = loggedInUseruid != null &&
             userUid == loggedInUseruid
-        ? Color.fromARGB(255, 156, 177, 207) // Light pink for logged-in user
+        ? Color.fromARGB(255, 169, 184, 213) // Light pink for logged-in user
         : Color.fromARGB(255, 244, 244, 244); // Light blue for others
 
     return showPost
@@ -89,8 +94,22 @@ class Post extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  // Top Row with Posting Time
                   Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        formatPostingTime(postingTime),
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: Colors.black54,
+                        ),
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 8),
+                  // User Info Section
+                  Row(
                     children: [
                       CircleAvatar(
                         radius: 24,
@@ -113,39 +132,65 @@ class Post extends StatelessWidget {
                               ),
                             ),
                             SizedBox(height: 4),
-                            Text(
-                              formatPostingTime(postingTime),
-                              style: TextStyle(
-                                fontSize: 12,
-                                color: Colors.black54,
+                            // Grade Stars Section directly below the user name
+                            Row(
+                              children: List.generate(
+                                3,
+                                (index) => Icon(
+                                  Icons.star,
+                                  size: 20,
+                                  color: index < grade
+                                      ? Colors.amber
+                                      : Colors.grey,
+                                ),
                               ),
                             ),
                           ],
                         ),
                       ),
-                      if (loggedInUseruid != null && userUid == loggedInUseruid)
-                        Row(
-                          children: [
-                            IconButton(
-                              onPressed: () {
-                                _showEditDialog(context);
-                              },
-                              icon: Icon(Icons.edit),
+                      SizedBox(width: 12),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
+                          Text(
+                            '총 거래 횟수',
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: Colors.black54,
                             ),
-                            IconButton(
-                              onPressed: () {
-                                _confirmDelete(context);
-                              },
-                              icon: Icon(Icons.delete),
-                              color: Color.fromARGB(255, 224, 114, 106),
+                          ),
+                          Text(
+                            numberOfTransaction.toString() + '회',
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black87,
                             ),
-                          ],
-                        ),
+                          ),
+                          SizedBox(height: 8),
+                          Text(
+                            '총 거래 금액',
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: Colors.black54,
+                            ),
+                          ),
+                          Text(
+                            currencyFormatter.format(totalTransaction),
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black87,
+                            ),
+                          ),
+                        ],
+                      ),
                     ],
                   ),
                   SizedBox(height: 8),
                   Divider(color: Colors.black12),
                   SizedBox(height: 6),
+                  // Rest of the card content
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -196,13 +241,36 @@ class Post extends StatelessWidget {
                   SizedBox(height: 6),
                   Divider(color: Colors.black12),
                   SizedBox(height: 6),
-                  Text(
-                    '총 거래대금 ${currencyFormatter.format(totalPrice)}',
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black87,
-                    ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        '총 거래대금 ${currencyFormatter.format(totalPrice)}',
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black87,
+                        ),
+                      ),
+                      if (loggedInUseruid != null && userUid == loggedInUseruid)
+                        Row(
+                          children: [
+                            IconButton(
+                              onPressed: () {
+                                _showEditDialog(context);
+                              },
+                              icon: Icon(Icons.edit),
+                            ),
+                            IconButton(
+                              onPressed: () {
+                                _confirmDelete(context);
+                              },
+                              icon: Icon(Icons.delete),
+                              color: Color.fromARGB(255, 224, 114, 106),
+                            ),
+                          ],
+                        ),
+                    ],
                   ),
                 ],
               ),

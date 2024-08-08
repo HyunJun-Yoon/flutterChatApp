@@ -77,19 +77,26 @@ class _RegisterPageState extends State<RegisterPage> {
       child: Padding(
         padding: const EdgeInsets.symmetric(
           horizontal: 15.0,
-          vertical: 20.0,
+          vertical: 10.0,
         ),
         child: Column(
           children: [
             _headerText(),
-            if (!isLoading) _registerForm(),
-            if (!isLoading) _loginAnAccountLink(),
-            if (isLoading)
-              const Expanded(
-                child: Center(
-                  child: CircularProgressIndicator(),
+            Expanded(
+              child: SingleChildScrollView(
+                child: Column(
+                  children: [
+                    _registerForm(),
+                    if (isLoading)
+                      const Center(
+                        child: CircularProgressIndicator(),
+                      ),
+                  ],
                 ),
               ),
+            ),
+            if (!isLoading) _registerButton(),
+            if (!isLoading) _loginAnAccountLink(),
           ],
         ),
       ),
@@ -125,56 +132,62 @@ class _RegisterPageState extends State<RegisterPage> {
 
   Widget _registerForm() {
     return Container(
-      height: MediaQuery.sizeOf(context).height * 0.60,
+      height: MediaQuery.sizeOf(context).height *
+          0.7, // Adjust this value to your preference
       margin: EdgeInsets.symmetric(
-        vertical: MediaQuery.sizeOf(context).height * 0.05,
+        vertical: MediaQuery.sizeOf(context).height * 0.0,
       ),
       child: Form(
         key: _registerFormKey,
-        child: ListView(
+        child: Column(
           children: [
-            Column(
-              mainAxisSize: MainAxisSize.max,
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                _pfpSelectionField(),
-                CustomFormField(
-                  hintText: "닉네임",
-                  height: MediaQuery.sizeOf(context).height * 0.1,
-                  validationRegEx: NAME_VALIDATION_REGEX,
-                  onSaved: (value) {
-                    setState(() {
-                      name = value;
-                    });
-                  },
-                ),
-                CustomFormField(
-                  hintText: "이메일",
-                  height: MediaQuery.sizeOf(context).height * 0.1,
-                  validationRegEx: EMAIL_VALIDATION_REGEX,
-                  onSaved: (value) {
-                    setState(() {
-                      email = value;
-                    });
-                  },
-                ),
-                CustomFormField(
-                  hintText: "비밀번호",
-                  height: MediaQuery.sizeOf(context).height * 0.1,
-                  validationRegEx: PASSWORD_VALIDATION_REGEX,
-                  obscureText: true,
-                  onSaved: (value) {
-                    setState(() {
-                      password = value;
-                    });
-                  },
-                ),
-                _province(),
-                _city(cities),
-              ],
+            // Add an Expanded widget here to center the profile icon
+            Expanded(
+              flex: 1,
+              child: Center(
+                child: _pfpSelectionField(),
+              ),
             ),
-            _registerButton(),
+            Expanded(
+              flex: 2,
+              child: ListView(
+                children: [
+                  CustomFormField(
+                    hintText: "닉네임",
+                    height: MediaQuery.sizeOf(context).height * 0.1,
+                    validationRegEx: NAME_VALIDATION_REGEX,
+                    onSaved: (value) {
+                      setState(() {
+                        name = value;
+                      });
+                    },
+                  ),
+                  CustomFormField(
+                    hintText: "이메일",
+                    height: MediaQuery.sizeOf(context).height * 0.1,
+                    validationRegEx: EMAIL_VALIDATION_REGEX,
+                    onSaved: (value) {
+                      setState(() {
+                        email = value;
+                      });
+                    },
+                  ),
+                  CustomFormField(
+                    hintText: "비밀번호",
+                    height: MediaQuery.sizeOf(context).height * 0.1,
+                    validationRegEx: PASSWORD_VALIDATION_REGEX,
+                    obscureText: true,
+                    onSaved: (value) {
+                      setState(() {
+                        password = value;
+                      });
+                    },
+                  ),
+                  _province(),
+                  _city(cities),
+                ],
+              ),
+            ),
           ],
         ),
       ),
@@ -182,9 +195,11 @@ class _RegisterPageState extends State<RegisterPage> {
   }
 
   Widget _registerButton() {
-    return SizedBox(
-      width: MediaQuery.sizeOf(context).width,
-      child: MaterialButton(
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 10.0),
+      child: SizedBox(
+        width: MediaQuery.sizeOf(context).width,
+        child: MaterialButton(
           color: Theme.of(context).colorScheme.primary,
           onPressed: () async {
             setState(() {
@@ -208,6 +223,7 @@ class _RegisterPageState extends State<RegisterPage> {
                           province: provinceValue,
                           city: cityValue,
                           pfpURL: pfpURL,
+                          grade: 3,
                           numberOfTransaction: 0,
                           totalTransaction: 0,
                         ),
@@ -229,6 +245,7 @@ class _RegisterPageState extends State<RegisterPage> {
                         province: provinceValue,
                         city: cityValue,
                         pfpURL: "",
+                        grade: 3,
                         numberOfTransaction: 0,
                         totalTransaction: 0,
                       ),
@@ -260,7 +277,9 @@ class _RegisterPageState extends State<RegisterPage> {
             style: TextStyle(
               color: Colors.white,
             ),
-          )),
+          ),
+        ),
+      ),
     );
   }
 
@@ -387,7 +406,8 @@ class _RegisterPageState extends State<RegisterPage> {
   }
 
   Widget _loginAnAccountLink() {
-    return Expanded(
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 10.0),
       child: Row(
         mainAxisSize: MainAxisSize.max,
         mainAxisAlignment: MainAxisAlignment.center,

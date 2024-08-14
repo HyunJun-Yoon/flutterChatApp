@@ -138,6 +138,7 @@ class _MessagesPageState extends State<MessagesPage> {
                       await _databaseService.createNewChat(
                         _authService.user!.uid,
                         user.uid!,
+                        user.name!,
                       );
                     }
                     _navigationService.push(

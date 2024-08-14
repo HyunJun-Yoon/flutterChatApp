@@ -52,6 +52,7 @@ class _RegisterPageState extends State<RegisterPage> {
   File? selectedImage;
   IconLabel? selectedIcon;
   bool isLoading = false;
+  List<String>? chatId = [];
 
   @override
   void initState() {
@@ -226,6 +227,7 @@ class _RegisterPageState extends State<RegisterPage> {
                           grade: 3,
                           numberOfTransaction: 0,
                           totalTransaction: 0,
+                          chatId: [],
                         ),
                       );
                       _alertService.showToast(
@@ -248,6 +250,7 @@ class _RegisterPageState extends State<RegisterPage> {
                         grade: 3,
                         numberOfTransaction: 0,
                         totalTransaction: 0,
+                        chatId: [],
                       ),
                     );
                     _alertService.showToast(

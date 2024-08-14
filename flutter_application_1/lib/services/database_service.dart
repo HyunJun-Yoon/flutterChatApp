@@ -43,6 +43,15 @@ class DatabaseService {
     await _usersCollection?.doc(userProfile.uid).set(userProfile);
   }
 
+  Future<void> updateUserChat({
+    required String uid,
+    required String chatId,
+  }) async {
+    await _usersCollection?.doc(uid).update({
+      'chatId': FieldValue.arrayUnion([chatId]), // Assuming chatIDs is a list
+    });
+  }
+
   Stream<QuerySnapshot<UserProfile>> getUserProfiles() {
     return _usersCollection
         ?.where("uid", isNotEqualTo: _authService.user!.uid)
@@ -58,8 +67,14 @@ class DatabaseService {
     return false;
   }
 
-  Future<void> createNewChat(String uid1, String uid2) async {
+  Future<void> createNewChat(String uid1, String uid2, String userName) async {
     String chatID = generateChatID(uid1: uid1, uid2: uid2);
+    Message message = Message(
+      senderID: uid1,
+      content: userName + " 님이 채팅을 시작하였습니다.",
+      messageType: MessageType.Text,
+      sentAt: Timestamp.fromDate(DateTime.now()),
+    );
     final docRef = _chatsCollection!.doc(chatID);
     final chat = Chat(
       id: chatID,
@@ -67,6 +82,10 @@ class DatabaseService {
       messages: [],
     );
     await docRef.set(chat);
+
+    await sendChatMessage(uid1, uid2, message);
+    await updateUserChat(uid: uid1, chatId: chatID);
+    await updateUserChat(uid: uid2, chatId: chatID);
   }
 
   Future<void> sendChatMessage(

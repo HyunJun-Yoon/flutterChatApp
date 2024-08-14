@@ -7,6 +7,7 @@ class UserProfile {
   int? grade;
   int? numberOfTransaction;
   double? totalTransaction;
+  List<String>? chatId = [];
 
   UserProfile({
     required this.uid,
@@ -17,6 +18,7 @@ class UserProfile {
     required this.grade,
     required this.numberOfTransaction,
     required this.totalTransaction,
+    required this.chatId,
   });
 
   UserProfile.fromJson(Map<String, dynamic> json) {
@@ -28,6 +30,13 @@ class UserProfile {
     grade = json['grade'];
     numberOfTransaction = json['numberOfTransaction'];
     totalTransaction = json['totalTransaction'];
+    if (json['chatId'] != null) {
+      chatId = (json['chatId'] as List<dynamic>?)
+          ?.map((item) => item as String)
+          .toList();
+    } else {
+      chatId = [];
+    }
   }
 
   Map<String, dynamic> toJson() {
@@ -40,6 +49,7 @@ class UserProfile {
     data['grade'] = grade;
     data['numberOfTransaction'] = numberOfTransaction;
     data['totalTransaction'] = totalTransaction;
+    data['chatId'] = chatId;
     return data;
   }
 
@@ -53,6 +63,7 @@ class UserProfile {
       grade: map['grade'] as int,
       numberOfTransaction: map['numberOfTransaction'] as int,
       totalTransaction: map['totalTransaction'] as double,
+      chatId: map['chatId'] != null ? List<String>.from(map['chatId']) : [],
     );
   }
 }

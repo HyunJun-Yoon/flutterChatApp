@@ -39,6 +39,7 @@ class _TransactionPageState extends State<TransactionPage>
   bool isPostingVisible = false;
   bool isTextFieldOpen = false;
   String? contentValue = null;
+  List<String>? chatId = [];
   var userName;
   var userUid;
   var userPFP;
@@ -61,6 +62,33 @@ class _TransactionPageState extends State<TransactionPage>
     _alertService = _getIt.get<AlertService>();
     _databaseService = _getIt.get<DatabaseService>();
     getUserInfo();
+  }
+
+  Future<bool> _showConfirmationDialog(BuildContext context) async {
+    return await showDialog<bool>(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: Text('확인 메세지'),
+              content: Text('대화를 시작하시겠습니까?'),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop(false); // User cancels the action
+                  },
+                  child: Text('대화 취소'),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.of(context).pop(true); // User confirms the action
+                  },
+                  child: Text('대화 시작'),
+                ),
+              ],
+            );
+          },
+        ) ??
+        false; // Return false if the dialog is dismissed
   }
 
   void postMessage() {
@@ -626,6 +654,7 @@ class _TransactionPageState extends State<TransactionPage>
         break;
       // Add cases for other provinces if needed
     }
+
     showModalBottomSheet(
       context: context,
       builder: (BuildContext context) {
@@ -677,6 +706,7 @@ class _TransactionPageState extends State<TransactionPage>
       grade = data['grade'];
       numberOfTransaction = data['numberOfTransaction'];
       totalTransaction = data['totalTransaction'];
+      chatId = (data['chatId'] as List<dynamic>?)?.cast<String>() ?? [];
     }
   }
 
@@ -743,6 +773,7 @@ class _TransactionPageState extends State<TransactionPage>
                       grade: grade,
                       numberOfTransaction: numberOfTransaction,
                       totalTransaction: totalTransaction,
+                      chatId: chatId,
                     ),
                   ),
                 );
@@ -868,6 +899,13 @@ class _TransactionPageState extends State<TransactionPage>
                                   totalTransaction: totalTransaction,
                                   numberOfTransaction: numberOfTransaction,
                                   onTap: () async {
+                                    if (post['UserId'] == loggedInUser!.uid) {
+                                      return;
+                                    }
+                                    bool shouldProceed =
+                                        await _showConfirmationDialog(context);
+                                    if (!shouldProceed) return;
+
                                     try {
                                       UserProfile user =
                                           await getClickedUser(post['UserId']);
@@ -880,6 +918,7 @@ class _TransactionPageState extends State<TransactionPage>
                                         await _databaseService.createNewChat(
                                           _authService.user!.uid,
                                           user.uid!,
+                                          userName,
                                         );
                                       }
                                       _navigationService.push(
@@ -1176,11 +1215,18 @@ class _TransactionPageState extends State<TransactionPage>
                                 transactionCity: post['TransactionCity'],
                                 searchProvince: searchProvince,
                                 searchCity: searchCity,
+                                loggedInUseruid: loggedInUser!.uid,
                                 grade: grade,
                                 totalTransaction: totalTransaction,
                                 numberOfTransaction: numberOfTransaction,
-                                loggedInUseruid: loggedInUser!.uid,
                                 onTap: () async {
+                                  if (userUid == loggedInUser!.uid) {
+                                    return;
+                                  }
+                                  bool shouldProceed =
+                                      await _showConfirmationDialog(context);
+                                  if (!shouldProceed) return;
+
                                   try {
                                     UserProfile user =
                                         await getClickedUser(post['UserId']);
@@ -1193,6 +1239,7 @@ class _TransactionPageState extends State<TransactionPage>
                                       await _databaseService.createNewChat(
                                         _authService.user!.uid,
                                         user.uid!,
+                                        userName,
                                       );
                                     }
                                     _navigationService.push(

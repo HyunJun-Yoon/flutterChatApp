@@ -99,6 +99,7 @@ class _HomePageState extends State<HomePage> {
                       await _databaseService.createNewChat(
                         _authService.user!.uid,
                         user.uid!,
+                        user.name!,
                       );
                     }
                     _navigationService.push(

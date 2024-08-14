@@ -13,6 +13,7 @@ class SettingPage extends StatefulWidget {
   final grade;
   final totalTransaction;
   final numberOfTransaction;
+  final chatId;
   final VoidCallback onSettingsUpdated;
 
   const SettingPage({
@@ -26,6 +27,7 @@ class SettingPage extends StatefulWidget {
     required this.grade,
     required this.totalTransaction,
     required this.numberOfTransaction,
+    required this.chatId,
     required this.onSettingsUpdated,
   });
 
@@ -76,6 +78,7 @@ class _SettingPageState extends State<SettingPage> {
                       grade: widget.grade,
                       numberOfTransaction: widget.numberOfTransaction,
                       totalTransaction: widget.totalTransaction,
+                      chatId: widget.chatId,
                       onSettingsUpdated: widget.onSettingsUpdated,
                     ),
                   ),

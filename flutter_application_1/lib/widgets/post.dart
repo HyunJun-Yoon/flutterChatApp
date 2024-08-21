@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'dart:math';
 
 class Post extends StatelessWidget {
   final int quantity;
@@ -16,9 +17,9 @@ class Post extends StatelessWidget {
   final String? searchProvince;
   final String? searchCity;
   final String? loggedInUseruid;
-  final grade;
-  final numberOfTransaction;
-  final totalTransaction;
+  final int grade;
+  final int numberOfTransaction;
+  final double totalTransaction;
   final Function()? onTap;
   final Timestamp postingTime;
 
@@ -43,6 +44,7 @@ class Post extends StatelessWidget {
     required this.loggedInUseruid,
     this.onTap,
   }) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     bool showPost =
@@ -135,11 +137,17 @@ class Post extends StatelessWidget {
                             // Grade Stars Section directly below the user name
                             Row(
                               children: List.generate(
-                                3,
+                                5,
                                 (index) => Icon(
                                   Icons.star,
                                   size: 20,
-                                  color: index < grade
+                                  color: index <
+                                          grade /
+                                              max(
+                                                  1.0,
+                                                  numberOfTransaction
+                                                          .toDouble() +
+                                                      1)
                                       ? Colors.amber
                                       : Colors.grey,
                                 ),
@@ -153,7 +161,7 @@ class Post extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.end,
                         children: [
                           Text(
-                            '총 거래 횟수',
+                            '누적 거래 횟수',
                             style: TextStyle(
                               fontSize: 14,
                               color: Colors.black54,
@@ -169,7 +177,7 @@ class Post extends StatelessWidget {
                           ),
                           SizedBox(height: 8),
                           Text(
-                            '총 거래 금액',
+                            '누적 거래 금액',
                             style: TextStyle(
                               fontSize: 14,
                               color: Colors.black54,
@@ -245,7 +253,7 @@ class Post extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        '총 거래대금 ${currencyFormatter.format(totalPrice)}',
+                        '총 거래 대금 ${currencyFormatter.format(totalPrice)}',
                         style: TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.bold,

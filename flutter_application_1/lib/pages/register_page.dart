@@ -225,7 +225,7 @@ class _RegisterPageState extends State<RegisterPage> {
                           city: cityValue,
                           pfpURL: pfpURL,
                           grade: 3,
-                          numberOfTransaction: 0,
+                          numberOfTransaction: 1,
                           totalTransaction: 0,
                           chatId: [],
                         ),

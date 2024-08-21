@@ -2,6 +2,7 @@ import 'package:flutter_application_1/models/message.dart';
 
 class Chat {
   String? id;
+
   List<String>? participants;
   List<Message>? messages;
 
@@ -13,6 +14,7 @@ class Chat {
 
   Chat.fromJson(Map<String, dynamic> json) {
     id = json['id'];
+
     participants = List<String>.from(json['participants']);
     messages =
         List.from(json['messages']).map((m) => Message.fromJson(m)).toList();
@@ -21,6 +23,7 @@ class Chat {
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
     data['id'] = id;
+
     data['participants'] = participants;
     data['messages'] = messages?.map((m) => m.toJson()).toList() ?? [];
     return data;

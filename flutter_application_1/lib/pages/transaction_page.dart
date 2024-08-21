@@ -105,6 +105,9 @@ class _TransactionPageState extends State<TransactionPage>
           'Quantity': int.parse(text1Controller.text),
           'MO': int.parse(text2Controller.text),
           'TimeStamp': Timestamp.now(),
+          'grade': grade,
+          'numberOfTransaction': numberOfTransaction,
+          'totalTransaction': totalTransaction,
         }).then((_) {
           // Post added successfully, show success message
           showDialog(
@@ -199,6 +202,8 @@ class _TransactionPageState extends State<TransactionPage>
           'Quantity': int.parse(text3Controller.text),
           'MO': int.parse(text4Controller.text),
           'TimeStamp': Timestamp.now(),
+          'numberOfTransaction': numberOfTransaction,
+          'totalTransaction': totalTransaction,
         }).then((_) {
           // Post added successfully, show success message
           showDialog(
@@ -895,9 +900,10 @@ class _TransactionPageState extends State<TransactionPage>
                                   searchProvince: searchProvince,
                                   searchCity: searchCity,
                                   loggedInUseruid: loggedInUser!.uid,
-                                  grade: grade,
-                                  totalTransaction: totalTransaction,
-                                  numberOfTransaction: numberOfTransaction,
+                                  grade: post['grade'],
+                                  numberOfTransaction:
+                                      post['numberOfTransaction'],
+                                  totalTransaction: post['totalTransaction'],
                                   onTap: () async {
                                     if (post['UserId'] == loggedInUser!.uid) {
                                       return;
@@ -916,10 +922,9 @@ class _TransactionPageState extends State<TransactionPage>
                                       );
                                       if (!chatExists) {
                                         await _databaseService.createNewChat(
-                                          _authService.user!.uid,
-                                          user.uid!,
-                                          userName,
-                                        );
+                                            _authService.user!.uid,
+                                            user.uid!,
+                                            userName);
                                       }
                                       _navigationService.push(
                                         MaterialPageRoute(
@@ -1216,9 +1221,10 @@ class _TransactionPageState extends State<TransactionPage>
                                 searchProvince: searchProvince,
                                 searchCity: searchCity,
                                 loggedInUseruid: loggedInUser!.uid,
-                                grade: grade,
-                                totalTransaction: totalTransaction,
-                                numberOfTransaction: numberOfTransaction,
+                                grade: post['grade'],
+                                numberOfTransaction:
+                                    post['numberOfTransaction'],
+                                totalTransaction: post['totalTransaction'],
                                 onTap: () async {
                                   if (userUid == loggedInUser!.uid) {
                                     return;
@@ -1237,10 +1243,9 @@ class _TransactionPageState extends State<TransactionPage>
                                     );
                                     if (!chatExists) {
                                       await _databaseService.createNewChat(
-                                        _authService.user!.uid,
-                                        user.uid!,
-                                        userName,
-                                      );
+                                          _authService.user!.uid,
+                                          user.uid!,
+                                          userName);
                                     }
                                     _navigationService.push(
                                       MaterialPageRoute(

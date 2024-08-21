@@ -14,7 +14,7 @@ class NavigationService {
   final Map<String, Widget Function(BuildContext)> _routes = {
     "/login": (context) => LoginPage(),
     "/register": (context) => RegisterPage(),
-    "/home": (context) => HomePage(),
+    //"/home": (context) => HomePage(),
     "/transaction": (context) => TransactionPage(),
     "/messages": (context) => MessagesPage(),
     "/store": (context) => StorePage(),

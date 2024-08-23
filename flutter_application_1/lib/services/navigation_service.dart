@@ -4,8 +4,9 @@ import 'package:flutter_application_1/pages/cart_page.dart';
 import 'package:flutter_application_1/pages/home_page.dart';
 import 'package:flutter_application_1/pages/login_page.dart';
 import 'package:flutter_application_1/pages/messages_page.dart';
+import 'package:flutter_application_1/pages/registerItem_page.dart';
 import 'package:flutter_application_1/pages/register_page.dart';
-import 'package:flutter_application_1/pages/store_page.dart';
+import 'package:flutter_application_1/pages/goods_page.dart';
 import 'package:flutter_application_1/pages/transaction_page.dart';
 
 class NavigationService {
@@ -17,7 +18,8 @@ class NavigationService {
     //"/home": (context) => HomePage(),
     "/transaction": (context) => TransactionPage(),
     "/messages": (context) => MessagesPage(),
-    "/store": (context) => StorePage(),
+    "/store": (context) => GoodsPage(),
+    "/registerItem": (context) => RegisterItemPage(),
     "/cart": (context) => CartPage(),
   };
 

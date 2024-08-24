@@ -1124,7 +1124,7 @@ class _TransactionPageState extends State<TransactionPage>
                               onPressed: postMessage,
                               style: ElevatedButton.styleFrom(
                                 backgroundColor:
-                                    Color.fromARGB(255, 194, 217, 247),
+                                    Theme.of(context).colorScheme.primary,
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(0),
                                 ),
@@ -1133,7 +1133,7 @@ class _TransactionPageState extends State<TransactionPage>
                                 '등록하기',
                                 style: TextStyle(
                                   fontSize: 16.0,
-                                  color: Theme.of(context).colorScheme.primary,
+                                  color: Colors.white,
                                 ),
                               ),
                             ),

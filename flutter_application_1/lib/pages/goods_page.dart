@@ -21,24 +21,6 @@ class _GoodsPageState extends State<GoodsPage> {
   int _selectedIndex = 1;
   final currencyFormatter = NumberFormat.currency(locale: 'ko_KR', symbol: '₩');
 
-  // Define a list of products
-  final List<Map<String, dynamic>> products = [
-    {
-      'name': '비트모빅 종이지갑',
-      'description':
-          'This is a short product description to give more details about the item.',
-      'price': '5000',
-      'image': 'assets/images/paper.jpg',
-    },
-    {
-      'name': '비트모빅 티셔츠',
-      'description': 'A stylish backpack suitable for all occasions.',
-      'price': '32000',
-      'image': 'assets/images/shirt.jpg',
-    },
-    // Add more products as needed
-  ];
-
   @override
   void initState() {
     super.initState();
@@ -63,7 +45,7 @@ class _GoodsPageState extends State<GoodsPage> {
         'name': product['name'],
         'description': product['description'],
         'price': product['price'],
-        'image': product['image'],
+        'image': product['imageUrls'][0], // Use the first image URL
         'quantity': 1,
       }).then((_) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -120,116 +102,140 @@ class _GoodsPageState extends State<GoodsPage> {
         centerTitle: true,
         actions: [],
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: ListView.builder(
-          itemCount: products.length, // Use the length of the products list
-          itemBuilder: (context, index) {
-            final product = products[index];
-            return Card(
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(15),
-              ),
-              elevation: 5,
-              margin: EdgeInsets.symmetric(vertical: 10),
-              color: Color(0xFFF5F5F5),
-              child: InkWell(
-                onTap: () {
-                  // Navigate to product details
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => ProductDetailPage(
-                        product: product, // Pass the product data here
-                      ),
-                    ),
-                  );
-                },
-                child: Padding(
-                  padding: const EdgeInsets.all(12.0),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      ClipRRect(
-                        borderRadius: BorderRadius.circular(10),
-                        child: Image.asset(
-                          product['image'], // Use the product's image
-                          width: 100,
-                          height: 130,
-                          fit: BoxFit.cover,
+      body: StreamBuilder<QuerySnapshot>(
+        stream: FirebaseFirestore.instance.collection('Products').snapshots(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center(child: CircularProgressIndicator());
+          }
+
+          if (snapshot.hasError) {
+            return Center(child: Text('Error: ${snapshot.error}'));
+          }
+
+          if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+            return Center(child: Text('판매 중인 상품이 없습니다.'));
+          }
+
+          final products = snapshot.data!.docs;
+
+          return ListView.builder(
+            itemCount: products.length,
+            itemBuilder: (context, index) {
+              final product = products[index].data() as Map<String, dynamic>;
+
+              return Card(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(15),
+                ),
+                elevation: 5,
+                margin: EdgeInsets.symmetric(vertical: 10),
+                color: Color(0xFFF5F5F5),
+                child: InkWell(
+                  onTap: () {
+                    // Navigate to product details
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => ProductDetailPage(
+                          product: product, // Pass the product data here
                         ),
                       ),
-                      SizedBox(width: 15),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              product['name'], // Use the product's name
-                              style: TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                                color: Color.fromARGB(255, 55, 54, 54),
-                              ),
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                            SizedBox(height: 4),
-                            Text(
-                              product[
-                                  'description'], // Use the product's description
-                              style: TextStyle(
-                                fontSize: 14,
-                                color: Colors.grey[700],
-                              ),
-                              maxLines: 2,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                            SizedBox(height: 8),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                  '${currencyFormatter.format(double.tryParse(product['price']))}', // Use the product's price
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    color: Color.fromARGB(255, 55, 54, 54),
-                                    fontWeight: FontWeight.bold,
-                                  ),
+                    );
+                  },
+                  child: Padding(
+                    padding: const EdgeInsets.all(12.0),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(10),
+                          child: product['imageUrls'] != null &&
+                                  product['imageUrls'].isNotEmpty
+                              ? Image.network(
+                                  product['imageUrls']
+                                      [0], // Use the first image URL
+                                  width: 100,
+                                  height: 130,
+                                  fit: BoxFit.cover,
+                                )
+                              : Icon(Icons.image,
+                                  size: 100, color: Colors.grey),
+                        ),
+                        SizedBox(width: 15),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                product['name'] ??
+                                    'No name', // Use the product's name
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                  color: Color.fromARGB(255, 55, 54, 54),
                                 ),
-                                ElevatedButton(
-                                  onPressed: () {
-                                    addToCart(product);
-                                  },
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor:
-                                        Color.fromARGB(255, 120, 142, 202),
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(5),
-                                    ),
-                                    padding: EdgeInsets.symmetric(
-                                        horizontal: 16, vertical: 8),
-                                  ),
-                                  child: Text(
-                                    '카트에 담기',
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                              SizedBox(height: 4),
+                              Text(
+                                product['description'] ??
+                                    'No description', // Use the product's description
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  color: Colors.grey[700],
+                                ),
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                              SizedBox(height: 8),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                    '${currencyFormatter.format(double.tryParse(product['price'].toString()))}', // Use the product's price
                                     style: TextStyle(
-                                      fontSize: 14,
-                                      color: Colors.white,
+                                      fontSize: 16,
+                                      color: Color.fromARGB(255, 55, 54, 54),
                                       fontWeight: FontWeight.bold,
                                     ),
                                   ),
-                                ),
-                              ],
-                            ),
-                          ],
+                                  ElevatedButton(
+                                    onPressed: () {
+                                      addToCart(product);
+                                    },
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor:
+                                          Color.fromARGB(255, 120, 142, 202),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(5),
+                                      ),
+                                      padding: EdgeInsets.symmetric(
+                                          horizontal: 16, vertical: 8),
+                                    ),
+                                    child: Text(
+                                      '카트에 담기',
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
-              ),
-            );
-          },
-        ),
+              );
+            },
+          );
+        },
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
@@ -238,14 +244,12 @@ class _GoodsPageState extends State<GoodsPage> {
             MaterialPageRoute(builder: (context) => RegisterItemPage()),
           );
         },
-        backgroundColor: Color.fromARGB(
-            255, 85, 121, 193), // Use the color similar to the one in the image
+        backgroundColor: Color.fromARGB(255, 85, 121, 193),
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(
-              15), // Optional: Adjust the corner radius if needed
+          borderRadius: BorderRadius.circular(15),
         ),
         child: Icon(
-          Icons.edit, // The icon matches the pencil/edit icon in the image
+          Icons.edit,
           color: Colors.white,
         ),
       ),

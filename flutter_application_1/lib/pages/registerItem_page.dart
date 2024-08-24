@@ -1,7 +1,13 @@
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter_application_1/services/auth_service.dart';
+import 'package:flutter_application_1/services/storage_service.dart';
+import 'package:get_it/get_it.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
+import 'package:path/path.dart' as p;
 
 class RegisterItemPage extends StatefulWidget {
   const RegisterItemPage({super.key});
@@ -16,9 +22,33 @@ class _RegisterItemPageState extends State<RegisterItemPage> {
   final _descriptionController = TextEditingController();
   final _priceController = TextEditingController();
   final ImagePicker _picker = ImagePicker();
+  final StorageService _storageService = StorageService();
+  final GetIt _getIt = GetIt.instance;
   List<File> _imageFiles = [];
   bool _isLoading = false;
   bool _isImageSectionVisible = true;
+  late AuthService _authService;
+  late User? loggedInUser = null;
+  List<String>? chatId = [];
+  var userName;
+  var userUid;
+  var userPFP;
+  var userProvince;
+  var userCity;
+  var searchProvince;
+  var searchCity;
+  var result;
+  var grade;
+  var numberOfTransaction;
+  var totalTransaction;
+
+  @override
+  void initState() {
+    super.initState();
+    _authService = _getIt.get<AuthService>();
+
+    getUserInfo();
+  }
 
   @override
   void dispose() {
@@ -26,6 +56,27 @@ class _RegisterItemPageState extends State<RegisterItemPage> {
     _descriptionController.dispose();
     _priceController.dispose();
     super.dispose();
+  }
+
+  getUserInfo() async {
+    loggedInUser = await _authService.getCurrentUser();
+    DocumentReference documentRef = FirebaseFirestore.instance
+        .collection('users')
+        .doc(_authService.user!.uid);
+    DocumentSnapshot documentSnapshot = await documentRef.get();
+    if (documentSnapshot.exists) {
+      Map<String, dynamic> data =
+          documentSnapshot.data() as Map<String, dynamic>;
+      userName = data['name'].toString();
+      userUid = data['uid'].toString();
+      userPFP = data['pfpURL'].toString();
+      userProvince = data['province'].toString();
+      userCity = data['city'].toString();
+      grade = data['grade'];
+      numberOfTransaction = data['numberOfTransaction'];
+      totalTransaction = data['totalTransaction'];
+      chatId = (data['chatId'] as List<dynamic>?)?.cast<String>() ?? [];
+    }
   }
 
   Future<void> _pickImages() async {
@@ -37,43 +88,49 @@ class _RegisterItemPageState extends State<RegisterItemPage> {
     }
   }
 
-  void _registerItem() async {
-    if (_formKey.currentState!.validate()) {
-      if (_imageFiles.isEmpty) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('최소 하나의 이미지를 업로드해야 합니다.'),
-            backgroundColor: Colors.red,
-          ),
-        );
-        return;
-      }
-
+  Future<void> _registerItem() async {
+    if (_formKey.currentState!.validate() && _imageFiles.isNotEmpty) {
       setState(() {
         _isLoading = true;
       });
 
-      // Handle image upload here
+      try {
+        // Upload images using the uploadItemImages function
+        String uid = loggedInUser!.uid;
+        List<String>? imageUrls = await _storageService.uploadItemImages(
+          files: _imageFiles,
+          uid: uid,
+        );
 
-      await FirebaseFirestore.instance.collection('Products').add({
-        'name': _nameController.text,
-        'description': _descriptionController.text,
-        'price': _priceController.text,
-        // Image URLs would be stored here if images are uploaded
-      });
-
-      setState(() {
-        _isLoading = false;
-      });
-
+        if (imageUrls != null) {
+          await FirebaseFirestore.instance.collection('items').add({
+            'name': _nameController.text,
+            'description': _descriptionController.text,
+            'price': _priceController.text,
+            'imageUrls': imageUrls, // Store image URLs
+            'uid': uid,
+            'createdAt': Timestamp.now(),
+          });
+        } else {
+          // Handle upload failure (optional)
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Failed to upload images')),
+          );
+        }
+      } catch (e) {
+        print('Failed to register item: $e');
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to register item')),
+        );
+      } finally {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('상품이 성공적으로 등록되었습니다!'),
-          backgroundColor: Colors.green,
-        ),
+        SnackBar(content: Text('모든 정보를 입력해주세요.')),
       );
-
-      Navigator.pop(context);
     }
   }
 
@@ -218,29 +275,31 @@ class _RegisterItemPageState extends State<RegisterItemPage> {
                   },
                 ),
                 SizedBox(height: 30),
-                _isLoading
-                    ? Center(child: CircularProgressIndicator())
-                    : Center(
-                        child: ElevatedButton(
-                          onPressed: _registerItem,
-                          child: Text(
-                            '상품 등록',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 16,
-                            ),
-                          ),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor:
-                                Theme.of(context).colorScheme.primary,
-                            padding: EdgeInsets.symmetric(
-                                horizontal: 32, vertical: 12),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                          ),
-                        ),
+                Center(
+                  child: ElevatedButton(
+                    onPressed: _isLoading ? null : _registerItem,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.blue,
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 40, vertical: 16),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(30),
                       ),
+                    ),
+                    child: _isLoading
+                        ? CircularProgressIndicator(
+                            color: Colors.white,
+                          )
+                        : Text(
+                            '등록',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
+                          ),
+                  ),
+                ),
               ],
             ),
           ),

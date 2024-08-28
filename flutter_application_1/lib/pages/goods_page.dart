@@ -103,7 +103,7 @@ class _GoodsPageState extends State<GoodsPage> {
         actions: [],
       ),
       body: StreamBuilder<QuerySnapshot>(
-        stream: FirebaseFirestore.instance.collection('Products').snapshots(),
+        stream: FirebaseFirestore.instance.collection('items').snapshots(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return Center(child: CircularProgressIndicator());
@@ -133,7 +133,6 @@ class _GoodsPageState extends State<GoodsPage> {
                 color: Color(0xFFF5F5F5),
                 child: InkWell(
                   onTap: () {
-                    // Navigate to product details
                     Navigator.push(
                       context,
                       MaterialPageRoute(
@@ -179,8 +178,7 @@ class _GoodsPageState extends State<GoodsPage> {
                               ),
                               SizedBox(height: 4),
                               Text(
-                                product['description'] ??
-                                    'No description', // Use the product's description
+                                product['description'] ?? 'No description',
                                 style: TextStyle(
                                   fontSize: 14,
                                   color: Colors.grey[700],
@@ -194,7 +192,7 @@ class _GoodsPageState extends State<GoodsPage> {
                                     MainAxisAlignment.spaceBetween,
                                 children: [
                                   Text(
-                                    '${currencyFormatter.format(double.tryParse(product['price'].toString()))}', // Use the product's price
+                                    '${currencyFormatter.format(double.tryParse(product['price'].toString()))}',
                                     style: TextStyle(
                                       fontSize: 16,
                                       color: Color.fromARGB(255, 55, 54, 54),

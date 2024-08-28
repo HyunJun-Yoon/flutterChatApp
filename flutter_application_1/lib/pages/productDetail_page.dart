@@ -1,3 +1,4 @@
+import 'package:carousel_slider/carousel_slider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/services/auth_service.dart';
@@ -19,6 +20,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
   late NavigationService _navigationService;
   late AuthService _authService;
   final currencyFormatter = NumberFormat.currency(locale: 'ko_KR', symbol: '₩');
+  int _currentImageIndex = 0;
 
   @override
   void initState() {
@@ -30,7 +32,6 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
   void addToCart(Map<String, dynamic> product) async {
     final userId = _authService.user!.uid;
 
-    // Query Firestore to check if the item is already in the cart
     final querySnapshot = await FirebaseFirestore.instance
         .collection("User Cart")
         .where('UserId', isEqualTo: userId)
@@ -38,13 +39,12 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
         .get();
 
     if (querySnapshot.docs.isEmpty) {
-      // If the item is not in the cart, add it
       FirebaseFirestore.instance.collection("User Cart").add({
         'UserId': userId,
         'name': product['name'],
         'description': product['description'],
         'price': product['price'],
-        'image': product['image'],
+        'image': product['imageUrls'][0],
         'quantity': 1,
       }).then((_) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -59,7 +59,6 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
         );
       });
     } else {
-      // Item is already in the cart
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
@@ -117,16 +116,50 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Center(
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(15),
-                  child: Image.asset(
-                    product['image'],
-                    width: MediaQuery.of(context).size.width * 0.8,
-                    height: MediaQuery.of(context).size.width * 0.8,
-                    fit: BoxFit.cover,
-                  ),
+              // Image Carousel
+              CarouselSlider.builder(
+                itemCount: product['imageUrls'].length,
+                itemBuilder: (context, index, realIndex) {
+                  return ClipRRect(
+                    borderRadius: BorderRadius.circular(15),
+                    child: Image.network(
+                      product['imageUrls'][index],
+                      fit: BoxFit.cover,
+                      width: MediaQuery.of(context).size.width * 0.8,
+                      height: MediaQuery.of(context).size.width * 0.8,
+                    ),
+                  );
+                },
+                options: CarouselOptions(
+                  autoPlay: false,
+                  enableInfiniteScroll: false,
+                  enlargeCenterPage: true,
+                  aspectRatio: 1.0,
+                  onPageChanged: (index, reason) {
+                    setState(() {
+                      _currentImageIndex = index;
+                    });
+                  },
                 ),
+              ),
+              // Dots indicator
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: product['imageUrls'].map<Widget>((url) {
+                  int index = product['imageUrls'].indexOf(url);
+                  return Container(
+                    width: 8.0,
+                    height: 8.0,
+                    margin:
+                        EdgeInsets.symmetric(vertical: 10.0, horizontal: 2.0),
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: _currentImageIndex == index
+                          ? Color.fromARGB(255, 39, 89, 164)
+                          : Color.fromARGB(255, 224, 155, 130),
+                    ),
+                  );
+                }).toList(),
               ),
               SizedBox(height: 24),
               Text(

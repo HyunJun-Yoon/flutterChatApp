@@ -19,7 +19,7 @@ class NavigationService {
     "/transaction": (context) => TransactionPage(),
     "/messages": (context) => MessagesPage(),
     "/store": (context) => GoodsPage(),
-    "/registerItem": (context) => RegisterItemPage(),
+//    "/registerItem": (context) => RegisterItemPage(),
     "/cart": (context) => CartPage(),
   };
 

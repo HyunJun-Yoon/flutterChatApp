@@ -2,7 +2,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter_application_1/services/alert_service.dart';
 import 'package:flutter_application_1/services/auth_service.dart';
+import 'package:flutter_application_1/services/navigation_service.dart';
 import 'package:flutter_application_1/services/storage_service.dart';
 import 'package:get_it/get_it.dart';
 import 'package:image_picker/image_picker.dart';
@@ -28,6 +30,8 @@ class _RegisterItemPageState extends State<RegisterItemPage> {
   bool _isLoading = false;
   bool _isImageSectionVisible = true;
   late AuthService _authService;
+  late AlertService _alertService;
+  late NavigationService _navigationService;
   late User? loggedInUser = null;
   List<String>? chatId = [];
   var userName;
@@ -46,7 +50,8 @@ class _RegisterItemPageState extends State<RegisterItemPage> {
   void initState() {
     super.initState();
     _authService = _getIt.get<AuthService>();
-
+    _alertService = _getIt.get<AlertService>();
+    _navigationService = _getIt.get<NavigationService>();
     getUserInfo();
   }
 
@@ -108,19 +113,33 @@ class _RegisterItemPageState extends State<RegisterItemPage> {
             'description': _descriptionController.text,
             'price': _priceController.text,
             'imageUrls': imageUrls, // Store image URLs
+            'userName': userName,
             'uid': uid,
             'createdAt': Timestamp.now(),
+            'userProvince': userProvince,
+            'userCity': userCity,
+            'grade': grade,
+            'numberOfTransaction': numberOfTransaction,
+            'totalTransaction': totalTransaction,
           });
+
+          // Display success message and navigate back to the goods page
+          _alertService.showToast(
+            text: "상품 등록이 완료되었습니다.",
+            icon: Icons.check,
+          );
+          _navigationService.goBack();
+          _navigationService.pushReplacementNamed("/store");
         } else {
-          // Handle upload failure (optional)
+          // Handle upload failure
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Failed to upload images')),
+            SnackBar(content: Text('이미지 업로드에 실패하였습니다.')),
           );
         }
       } catch (e) {
         print('Failed to register item: $e');
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to register item')),
+          SnackBar(content: Text('상품 등록이 실패하였습니다.')),
         );
       } finally {
         setState(() {

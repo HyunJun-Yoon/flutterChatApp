@@ -128,105 +128,142 @@ class _GoodsPageState extends State<GoodsPage> {
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(15),
                 ),
-                elevation: 5,
-                margin: EdgeInsets.symmetric(vertical: 10),
-                color: Color(0xFFF5F5F5),
-                child: InkWell(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => ProductDetailPage(
-                          product: product, // Pass the product data here
+                elevation:
+                    0, // Remove elevation to let the gradient be the focus
+                margin: EdgeInsets.symmetric(vertical: 10, horizontal: 15),
+                child: Container(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [
+                        Color.fromARGB(255, 39, 89, 164).withOpacity(0.5),
+                        Color.fromARGB(255, 224, 155, 130).withOpacity(0.5),
+                      ],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                    borderRadius: BorderRadius.circular(15),
+                  ),
+                  child: InkWell(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => ProductDetailPage(
+                            product: product,
+                          ),
                         ),
-                      ),
-                    );
-                  },
-                  child: Padding(
-                    padding: const EdgeInsets.all(12.0),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(10),
-                          child: product['imageUrls'] != null &&
-                                  product['imageUrls'].isNotEmpty
-                              ? Image.network(
-                                  product['imageUrls']
-                                      [0], // Use the first image URL
-                                  width: 100,
-                                  height: 130,
-                                  fit: BoxFit.cover,
-                                )
-                              : Icon(Icons.image,
-                                  size: 100, color: Colors.grey),
-                        ),
-                        SizedBox(width: 15),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                product['name'] ??
-                                    'No name', // Use the product's name
-                                style: TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                  color: Color.fromARGB(255, 55, 54, 54),
-                                ),
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                              SizedBox(height: 4),
-                              Text(
-                                product['description'] ?? 'No description',
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  color: Colors.grey[700],
-                                ),
-                                maxLines: 2,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                              SizedBox(height: 8),
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Text(
-                                    '${currencyFormatter.format(double.tryParse(product['price'].toString()))}',
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      color: Color.fromARGB(255, 55, 54, 54),
-                                      fontWeight: FontWeight.bold,
-                                    ),
+                      );
+                    },
+                    child: Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(12),
+                            child: product['imageUrls'] != null &&
+                                    product['imageUrls'].isNotEmpty
+                                ? Image.network(
+                                    product['imageUrls'][0],
+                                    width: 120,
+                                    height: 150,
+                                    fit: BoxFit.cover,
+                                  )
+                                : Container(
+                                    width: 120,
+                                    height: 150,
+                                    color: Colors.grey[300],
+                                    child: Icon(Icons.image,
+                                        size: 60, color: Colors.grey),
                                   ),
-                                  ElevatedButton(
-                                    onPressed: () {
-                                      addToCart(product);
-                                    },
-                                    style: ElevatedButton.styleFrom(
-                                      backgroundColor:
-                                          Color.fromARGB(255, 120, 142, 202),
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(5),
-                                      ),
-                                      padding: EdgeInsets.symmetric(
-                                          horizontal: 16, vertical: 8),
-                                    ),
-                                    child: Text(
-                                      '카트에 담기',
+                          ),
+                          SizedBox(width: 15),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  product['name'] ?? 'No name',
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.black87,
+                                  ),
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                                SizedBox(height: 10),
+                                Row(
+                                  children: [
+                                    Icon(Icons.person,
+                                        size: 16, color: Colors.grey[600]),
+                                    SizedBox(width: 6),
+                                    Text(
+                                      product['userName'] ?? 'No user name',
                                       style: TextStyle(
-                                        fontSize: 14,
-                                        color: Colors.white,
+                                          fontSize: 14,
+                                          color: Colors.grey[800]),
+                                    ),
+                                  ],
+                                ),
+                                SizedBox(height: 4),
+                                Row(
+                                  children: [
+                                    Icon(Icons.location_on,
+                                        size: 16, color: Colors.grey[600]),
+                                    SizedBox(width: 6),
+                                    Text(
+                                      '${product['userProvince'] ?? 'No province'}, ${product['userCity'] ?? 'No city'}',
+                                      style: TextStyle(
+                                          fontSize: 14,
+                                          color: Colors.grey[800]),
+                                    ),
+                                  ],
+                                ),
+                                SizedBox(height: 12),
+                                Divider(thickness: 1, color: Colors.grey[300]),
+                                SizedBox(height: 12),
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text(
+                                      '${currencyFormatter.format(double.tryParse(product['price'].toString()) ?? 0)}',
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        color: Colors.black87,
                                         fontWeight: FontWeight.bold,
                                       ),
                                     ),
-                                  ),
-                                ],
-                              ),
-                            ],
+                                    ElevatedButton(
+                                      onPressed: () {
+                                        addToCart(product);
+                                      },
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor:
+                                            Color.fromARGB(255, 200, 105, 64),
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(8),
+                                        ),
+                                        padding: EdgeInsets.symmetric(
+                                            horizontal: 18, vertical: 8),
+                                      ),
+                                      child: Text(
+                                        '문의하기',
+                                        style: TextStyle(
+                                          fontSize: 14,
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
                 ),

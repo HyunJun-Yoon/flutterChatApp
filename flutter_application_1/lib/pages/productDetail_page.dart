@@ -196,14 +196,14 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                     addToCart(product);
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Color.fromARGB(255, 120, 142, 202),
+                    backgroundColor: Color.fromARGB(255, 200, 105, 64),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10),
                     ),
                     padding: EdgeInsets.symmetric(horizontal: 40, vertical: 16),
                   ),
                   child: Text(
-                    '카트에 담기',
+                    '문의하기',
                     style: TextStyle(
                       fontSize: 18,
                       color: Colors.white,
